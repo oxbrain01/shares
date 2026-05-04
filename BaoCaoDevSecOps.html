@@ -275,8 +275,37 @@
                 <li><strong>129 High</strong> – nguy cơ rò rỉ dữ liệu quan trọng hoặc gián đoạn dịch vụ.</li>
                 <li><strong>130 Medium</strong> – cần xử lý theo lộ trình.</li>
             </ul>
-            <p> * Tỉ lệ lỗi Nghiêm trọng & Cao chiếm <strong>55%</strong>
-            </p>
+            <p>Tỉ lệ lỗi <strong>Critical + High chiếm 55%</strong>, phản ánh mức độ rủi ro cần kiểm soát chặt ở cấp tổ
+                chức.</p>
+            <h3>Phương pháp đo và giả định dữ liệu</h3>
+            <table>
+                <tr>
+                    <th>Hạng mục</th>
+                    <th>Nguyên tắc áp dụng</th>
+                </tr>
+                <tr>
+                    <td>Kỳ báo cáo</td>
+                    <td>Dữ liệu tổng hợp tại thời điểm phát hành báo cáo (04/05/2026).</td>
+                </tr>
+                <tr>
+                    <td>Phạm vi hệ thống</td>
+                    <td>5 nhóm hệ thống nội bộ: Audit Projects, Infra GSDT, Backend Services và các thành phần liên
+                        quan.</td>
+                </tr>
+                <tr>
+                    <td>Quy tắc severity</td>
+                    <td>Chuẩn hóa theo mức Critical, High, Medium từ công cụ và quy trình triage nội bộ.</td>
+                </tr>
+                <tr>
+                    <td>False positive</td>
+                    <td>Cảnh báo bị loại sau khi Security Team xác nhận không thể khai thác trong ngữ cảnh thực tế.</td>
+                </tr>
+                <tr>
+                    <td>Hiệu suất xử lý</td>
+                    <td>Đo bằng thời gian trung bình xử lý một cảnh báo (từ lúc tạo cảnh báo đến khi phân loại hoàn
+                        tất).</td>
+                </tr>
+            </table>
 
             <!-- 2. KỸ THUẬT PHÁT HIỆN LỖ HỔNG -->
             <h2>2. KỸ THUẬT PHÁT HIỆN LỖ HỔNG</h2>
@@ -342,7 +371,9 @@
             <p>Triển khai trên 5 nhóm hệ thống: <strong>Ứng dụng GSDT, Web MTQG, Web GSDT, Hạ tầng GSDT và Backend
                     Services (Simulator, Alert, Event, Vneid).</strong></p>
             <p>Các ứng dụng đều sử dụng <strong>JavaScript/TypeScript (Node.js)</strong>, riêng hạ tầng dùng
-                <strong>Ansible, Terraform (HCL/YAML)</strong>.<br> Phạm vi quét toàn bộ <strong>source code</strong>
+                <strong>Ansible, Terraform (HCL/YAML)</strong>.<br>Phạm vi đánh giá bao gồm <strong>source code, thư
+                    viện
+                    phụ thuộc, cấu hình hạ tầng (IaC), container và kiểm thử runtime/API</strong>.
             </p>
 
             <h3>Phân bố lỗ hổng theo khu vực</h3>
@@ -390,7 +421,9 @@
 
             <!-- 4. KẾT QUẢ THỬ NGHIỆM CÔNG CỤ -->
             <h2>4. KẾT QUẢ THỬ NGHIỆM CÔNG CỤ (SAST & DAST)</h2>
-            <p><em>Đánh giá lại các tools DevSecOps trên website, source code có chứa sẵn lỗ hổng.</em></p>
+            <p><em>Đánh giá chéo công cụ DevSecOps trên môi trường mẫu có chủ đích chứa lỗ hổng để kiểm chứng độ chính
+                    xác
+                    phát hiện.</em></p>
             <h3>Phạm vi thử nghiệm</h3>
             <table>
                 <tr>
@@ -417,9 +450,8 @@
                     <h3>🛒 SAST</h3>
                     <p><strong>Ứng dụng:</strong> OWASP Juice Shop (>10k ⭐ GitHub).</p>
                     <p><strong>Kết quả:</strong> 13 lỗ hổng (3 Critical, 6 High, 4 Medium).</p>
-                    <p><strong>Độ chính xác:</strong> 70% confirmed, 30% likely.
-                    <p><strong>False positive:</strong> 0%.
-                    </p>
+                    <p><strong>Độ chính xác:</strong> 70% confirmed, 30% likely.</p>
+                    <p><strong>False positive:</strong> 0%.</p>
                 </div>
                 <div>
                     <h3>🌐 DAST</h3>
@@ -510,7 +542,7 @@
                     <th>Giai đoạn</th>
                     <th>Khả năng phát hiện</th>
                     <th>Thời gian / cảnh báo</th>
-                    <th>Biện pháp</th>
+                    <th>Biện pháp chính</th>
                 </tr>
                 <tr>
                     <td>Trước tối ưu</td>
@@ -527,25 +559,25 @@
                 <tr>
                     <td>Sau tinh chỉnh lần 2</td>
                     <td>99%</td>
-                    <td>~8-10 phút</td>
+                    <td>~8-10 phút (giảm ~80% so với baseline)</td>
                     <td>Quality profile SonarQube</td>
                 </tr>
                 <tr>
-                    <td><strong> AI PentAGI</strong></td>
-                    <td>30%->90%</td>
-                    <td>15phút->1h</td>
-                    <td>Fine-tune prompt</td>
+                    <td><strong>Bổ sung lớp AI PentAGI</strong></td>
+                    <td>Tăng độ sâu kiểm thử theo kịch bản nghiệp vụ</td>
+                    <td>Tăng effort xử lý cho ca phức tạp (15 phút đến >1 giờ)</td>
+                    <td>Fine-tune prompt, mô phỏng tấn công đa bước</td>
                 </tr>
             </table>
             <div class="callout-success">
-
-                <strong>AI PentAGI</strong> có thể tăng khả năng phát hiện lỗ hổng lên 90%, Nhưng nó khiến thời
-                gian xử lý tăng từ 15
-                phút
-                tới >1 giờ bằng cách fine-tune prompt bắt buộc phải cover tất cả các lỗ hổng, tận dụng hết sức mạnh của
-                AI + Kali-linux.<br>
-                📈 Tools: Snyk, Semgrep, SonarQube, Trivy ... Khả năng phát hiện lỗ hổng tăng 99%, thời gian xử lý giảm
-                95%.
+                <strong>Kết luận vận hành:</strong> Sau tối ưu pipeline chuẩn (Snyk, Semgrep, SonarQube, Trivy), khả
+                năng
+                phát hiện tăng đến <strong>99%</strong>, thời gian xử lý trung bình giảm khoảng <strong>80%</strong> và
+                tỷ
+                lệ false positive giảm khoảng <strong>98%</strong>.<br>
+                <strong>PentAGI</strong> được định vị là lớp kiểm thử chuyên sâu cho ca phức tạp, không thay thế
+                pipeline
+                triage tốc độ cao.
             </div>
 
             <!-- 7. KẾ HOẠCH TRIỂN KHAI DỰ ÁN MỚI -->
@@ -593,6 +625,7 @@
 
             <!-- 8. CHI PHÍ -->
             <h2>8. CHI PHÍ HÀNG THÁNG</h2>
+            <h3>8.1 Cơ cấu chi phí công cụ</h3>
             <table>
                 <tr>
                     <th>Công cụ</th>
@@ -629,6 +662,44 @@
                     <td><strong>$1,086.58</strong></td>
                 </tr>
             </table>
+            <h3>8.2 Chỉ số quản trị hiệu quả (KPI điều hành)</h3>
+            <table>
+                <tr>
+                    <th>KPI</th>
+                    <th>Baseline</th>
+                    <th>Hiện tại</th>
+                    <th>Mục tiêu quý tiếp theo</th>
+                </tr>
+                <tr>
+                    <td>Thời gian xử lý trung bình / cảnh báo</td>
+                    <td>~44 phút</td>
+                    <td>~8-10 phút</td>
+                    <td>&lt;= 8 phút</td>
+                </tr>
+                <tr>
+                    <td>Tỷ lệ false positive</td>
+                    <td>Cao</td>
+                    <td>Giảm ~98% so với baseline</td>
+                    <td>Duy trì mức thấp ổn định</td>
+                </tr>
+                <tr>
+                    <td>Tỷ lệ phát hiện lỗ hổng trong phạm vi quét</td>
+                    <td>35%</td>
+                    <td>99%</td>
+                    <td>Duy trì >95%</td>
+                </tr>
+                <tr>
+                    <td>Tỷ lệ dự án áp dụng quality gate CI/CD</td>
+                    <td>Chưa đồng bộ</td>
+                    <td>Đã triển khai một phần</td>
+                    <td>100% dự án trọng điểm</td>
+                </tr>
+            </table>
+            <div class="callout-info">
+                🎯 Nguyên tắc điều hành: ưu tiên xử lý lỗi <strong>Critical/High theo SLA</strong>, theo dõi xu hướng
+                theo
+                tháng, và sử dụng dashboard chung cho Security Team, Tech Lead, Product Owner.
+            </div>
 
             <!-- 9. KẾT LUẬN & KHUYẾN NGHỊ -->
             <h2>9. KẾT LUẬN & KHUYẾN NGHỊ</h2>
