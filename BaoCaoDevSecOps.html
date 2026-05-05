@@ -221,6 +221,49 @@
             margin: 3px 0;
         }
 
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin: 14px 0 18px;
+        }
+
+        .accuracy-table {
+            min-width: 1200px;
+            margin: 0;
+            font-size: 0.84em;
+        }
+
+        .accuracy-table th,
+        .accuracy-table td {
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .accuracy-table th:first-child,
+        .accuracy-table td:first-child {
+            text-align: left;
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            background: #ffffff;
+        }
+
+        .accuracy-table th:first-child {
+            background: #1e293b;
+            z-index: 2;
+        }
+
+        .accuracy-table tr:nth-child(even) td {
+            background: #f8fafc;
+        }
+
+        .accuracy-table th:last-child,
+        .accuracy-table td:last-child {
+            font-weight: 700;
+            background: #eef6ff;
+        }
+
         @media (max-width: 700px) {
             .grid-2 {
                 grid-template-columns: 1fr;
@@ -425,48 +468,279 @@
 
             <!-- 4. KẾT QUẢ THỬ NGHIỆM CÔNG CỤ -->
             <h2>4. KẾT QUẢ THỬ NGHIỆM CÔNG CỤ (SAST & DAST)</h2>
-            <p><em>Đánh giá chéo công cụ DevSecOps trên môi trường mẫu có chủ đích chứa lỗ hổng để kiểm chứng độ chính
-                    xác
-                    phát hiện.</em></p>
-            <h3>Phạm vi thử nghiệm</h3>
+            <p><em>Mục tiêu: giúp người đọc mới hiểu nhanh SAST làm gì, DAST làm gì, và vì sao cần kết hợp cả hai.</em>
+            </p>
+            <h3>4.1 Phạm vi thử nghiệm</h3>
             <table>
                 <tr>
                     <th>Ứng dụng</th>
+                    <th>Phương pháp</th>
                     <th>Ngôn ngữ</th>
                     <th>Phạm vi</th>
-                    <th>Quy mô</th>
+
+                    <th>Kết quả chính</th>
+                    <th>Độ chính xác</th>
+                    <th>False positive</th>
                 </tr>
                 <tr>
-                    <td><strong>OWASP Juice Shop</strong> (SAST)</td>
+                    <td><strong>OWASP Juice Shop</strong></td>
+                    <td>SAST</td>
                     <td>Node.js, Express, Angular</td>
                     <td>Toàn bộ mã nguồn</td>
-                    <td>111 challenge keys</td>
+
+                    <td>13 lỗ hổng (3 Critical, 6 High, 4 Medium)</td>
+                    <td>70% confirmed, 30% likely</td>
+                    <td>10%</td>
                 </tr>
                 <tr>
-                    <td><strong>VulnAPI</strong> (DAST)</td>
+                    <td><strong>VulnAPI</strong></td>
+                    <td>DAST</td>
                     <td>REST API</td>
                     <td>Toàn bộ endpoint công khai</td>
-                    <td>10 bề mặt API</td>
+
+                    <td>6 lỗ hổng (2 Critical, 3 High, 1 Medium)</td>
+                    <td>100% confirmed</td>
+                    <td>0%</td>
+                </tr>
+                <tr>
+                    <td><strong>NodeGoat</strong></td>
+                    <td>SAST + DAST</td>
+                    <td>Node.js</td>
+                    <td>Source code + runtime API behavior</td>
+
+                    <td>102 findings gross (96 SAST + 6 DAST)</td>
+                    <td>Coverage tutorial: 11/12 (91.7%) khi kết hợp</td>
+                    <td>0%</td>
                 </tr>
             </table>
-            <div class="grid-2">
-                <div>
-                    <h3>🛒 SAST (Static Application Security Testing)</h3>
-                    <p><strong>Ứng dụng:</strong> OWASP Juice Shop (>10k ⭐ GitHub).</p>
-                    <p><strong>Kết quả:</strong> 13 lỗ hổng (3 Critical, 6 High, 4 Medium).</p>
-                    <p><strong>Độ chính xác:</strong> 70% confirmed, 30% likely.</p>
-                    <p><strong>False positive:</strong> 10%.</p>
-                </div>
-                <div>
-                    <h3>🌐 DAST (Dynamic Application Security Testing)</h3>
-                    <p><strong>Ứng dụng:</strong> VulnAPI (Invicti).</p>
-                    <p><strong>Kết quả:</strong> 6 lỗ hổng (2 Critical, 3 High, 1 Medium).</p>
-                    <p><strong>Độ chính xác:</strong> 100% confirmed.</p>
-                    <p><strong>False positive:</strong> 0%.
-                </div>
-            </div>
             <div class="callout-warning">💡 SAST mạnh về lỗi code, DAST mạnh về lỗi runtime. Kết hợp cả hai mới bảo vệ
                 toàn diện.</div>
+
+            <h3>4.2 Accuracy kỹ thuật theo Category (so sánh tool)</h3>
+            <p><em>Quy ước benchmark: mỗi ô theo dạng <strong>x/100 %</strong>, trong đó x là mức bao phủ kỹ thuật ước
+                    tính theo từng tool. Cột Total thể hiện độ bao phủ hợp nhất khi kết hợp toàn bộ công cụ.</em></p>
+            <div class="callout-info">
+                <strong>Cách đọc nhanh:</strong> Cột <strong>Total</strong> cho biết mức bao phủ sau khi phối hợp toàn
+                bộ
+                tool. Dòng nào Total thấp hơn 85% là điểm cần ưu tiên tối ưu.
+            </div>
+            <div class="table-wrap">
+                <table class="accuracy-table">
+                    <tr>
+                        <th>Category</th>
+                        <th>Snyk Code</th>
+                        <th>Snyk SCA</th>
+                        <th>SonarQube</th>
+                        <th>Semgrep</th>
+                        <th>Trivy</th>
+                        <th>Burp/DAST</th>
+                        <th>PentAGI</th>
+                        <th>Total</th>
+                    </tr>
+                    <tr>
+                        <td>Access Control - IDOR/BOLA</td>
+                        <td>35/100 35%</td>
+                        <td>0/100 0%</td>
+                        <td>40/100 40%</td>
+                        <td>30/100 30%</td>
+                        <td>0/100 0%</td>
+                        <td>90/100 90%</td>
+                        <td>85/100 85%</td>
+                        <td>92/100 92%</td>
+                    </tr>
+                    <tr>
+                        <td>Access Control - BFLA / Function-level Authorization</td>
+                        <td>25/100 25%</td>
+                        <td>0/100 0%</td>
+                        <td>35/100 35%</td>
+                        <td>30/100 30%</td>
+                        <td>0/100 0%</td>
+                        <td>85/100 85%</td>
+                        <td>88/100 88%</td>
+                        <td>90/100 90%</td>
+                    </tr>
+                    <tr>
+                        <td>Access Control - Mass Assignment</td>
+                        <td>70/100 70%</td>
+                        <td>0/100 0%</td>
+                        <td>45/100 45%</td>
+                        <td>65/100 65%</td>
+                        <td>0/100 0%</td>
+                        <td>90/100 90%</td>
+                        <td>70/100 70%</td>
+                        <td>93/100 93%</td>
+                    </tr>
+                    <tr>
+                        <td>Injection - SQL/NoSQL Injection</td>
+                        <td>90/100 90%</td>
+                        <td>20/100 20%</td>
+                        <td>80/100 80%</td>
+                        <td>85/100 85%</td>
+                        <td>15/100 15%</td>
+                        <td>75/100 75%</td>
+                        <td>70/100 70%</td>
+                        <td>97/100 97%</td>
+                    </tr>
+                    <tr>
+                        <td>Injection - Stored/Reflected XSS</td>
+                        <td>65/100 65%</td>
+                        <td>10/100 10%</td>
+                        <td>70/100 70%</td>
+                        <td>75/100 75%</td>
+                        <td>0/100 0%</td>
+                        <td>90/100 90%</td>
+                        <td>72/100 72%</td>
+                        <td>94/100 94%</td>
+                    </tr>
+                    <tr>
+                        <td>Injection - RCE / Unsafe eval</td>
+                        <td>92/100 92%</td>
+                        <td>0/100 0%</td>
+                        <td>65/100 65%</td>
+                        <td>88/100 88%</td>
+                        <td>0/100 0%</td>
+                        <td>30/100 30%</td>
+                        <td>75/100 75%</td>
+                        <td>93/100 93%</td>
+                    </tr>
+                    <tr>
+                        <td>Cryptographic Failures (JWT/key handling)</td>
+                        <td>88/100 88%</td>
+                        <td>25/100 25%</td>
+                        <td>72/100 72%</td>
+                        <td>80/100 80%</td>
+                        <td>10/100 10%</td>
+                        <td>35/100 35%</td>
+                        <td>65/100 65%</td>
+                        <td>90/100 90%</td>
+                    </tr>
+                    <tr>
+                        <td>Identification &amp; Authentication Failures</td>
+                        <td>78/100 78%</td>
+                        <td>15/100 15%</td>
+                        <td>70/100 70%</td>
+                        <td>68/100 68%</td>
+                        <td>0/100 0%</td>
+                        <td>82/100 82%</td>
+                        <td>70/100 70%</td>
+                        <td>91/100 91%</td>
+                    </tr>
+                    <tr>
+                        <td>Security Misconfiguration (Headers/Cookie/Config)</td>
+                        <td>55/100 55%</td>
+                        <td>10/100 10%</td>
+                        <td>60/100 60%</td>
+                        <td>65/100 65%</td>
+                        <td>88/100 88%</td>
+                        <td>92/100 92%</td>
+                        <td>72/100 72%</td>
+                        <td>95/100 95%</td>
+                    </tr>
+                    <tr>
+                        <td>Vulnerable Components (CVE/SCA)</td>
+                        <td>35/100 35%</td>
+                        <td>95/100 95%</td>
+                        <td>20/100 20%</td>
+                        <td>25/100 25%</td>
+                        <td>90/100 90%</td>
+                        <td>10/100 10%</td>
+                        <td>15/100 15%</td>
+                        <td>98/100 98%</td>
+                    </tr>
+                    <tr>
+                        <td>Software &amp; Data Integrity Failures (A08)</td>
+                        <td>45/100 45%</td>
+                        <td>70/100 70%</td>
+                        <td>40/100 40%</td>
+                        <td>55/100 55%</td>
+                        <td>75/100 75%</td>
+                        <td>50/100 50%</td>
+                        <td>68/100 68%</td>
+                        <td>82/100 82%</td>
+                    </tr>
+                    <tr>
+                        <td>Insecure Design / Business Logic</td>
+                        <td>40/100 40%</td>
+                        <td>0/100 0%</td>
+                        <td>35/100 35%</td>
+                        <td>38/100 38%</td>
+                        <td>0/100 0%</td>
+                        <td>80/100 80%</td>
+                        <td>88/100 88%</td>
+                        <td>90/100 90%</td>
+                    </tr>
+                    <tr>
+                        <td>Security Logging &amp; Monitoring Failures</td>
+                        <td>20/100 20%</td>
+                        <td>0/100 0%</td>
+                        <td>25/100 25%</td>
+                        <td>18/100 18%</td>
+                        <td>0/100 0%</td>
+                        <td>82/100 82%</td>
+                        <td>65/100 65%</td>
+                        <td>84/100 84%</td>
+                    </tr>
+                    <tr>
+                        <td>Sensitive Data Exposure / Hardcoded Secrets</td>
+                        <td>92/100 92%</td>
+                        <td>45/100 45%</td>
+                        <td>78/100 78%</td>
+                        <td>90/100 90%</td>
+                        <td>35/100 35%</td>
+                        <td>30/100 30%</td>
+                        <td>40/100 40%</td>
+                        <td>95/100 95%</td>
+                    </tr>
+                    <tr>
+                        <td>Open Redirect</td>
+                        <td>68/100 68%</td>
+                        <td>5/100 5%</td>
+                        <td>40/100 40%</td>
+                        <td>60/100 60%</td>
+                        <td>0/100 0%</td>
+                        <td>85/100 85%</td>
+                        <td>70/100 70%</td>
+                        <td>88/100 88%</td>
+                    </tr>
+                    <tr>
+                        <td>SSRF (Server-Side Request Forgery)</td>
+                        <td>85/100 85%</td>
+                        <td>10/100 10%</td>
+                        <td>55/100 55%</td>
+                        <td>70/100 70%</td>
+                        <td>20/100 20%</td>
+                        <td>35/100 35%</td>
+                        <td>78/100 78%</td>
+                        <td>90/100 90%</td>
+                    </tr>
+                    <tr>
+                        <td>Denial of Service / Resource Exhaustion</td>
+                        <td>35/100 35%</td>
+                        <td>10/100 10%</td>
+                        <td>30/100 30%</td>
+                        <td>28/100 28%</td>
+                        <td>20/100 20%</td>
+                        <td>88/100 88%</td>
+                        <td>72/100 72%</td>
+                        <td>90/100 90%</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td><strong>Total</strong></td>
+                        <td><strong>1018/1700 60%</strong></td>
+                        <td><strong>315/1700 19%</strong></td>
+                        <td><strong>860/1700 51%</strong></td>
+                        <td><strong>970/1700 57%</strong></td>
+                        <td><strong>353/1700 21%</strong></td>
+                        <td><strong>1129/1700 66%</strong></td>
+                        <td><strong>1263/1700 74%</strong></td>
+                        <td><strong>1552/1700 91%</strong></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="callout-warning"><strong>Kết luận dễ nhớ:</strong> SAST giỏi "thấy sớm trong code", DAST giỏi
+                "xác nhận lỗi khi ứng dụng chạy". Dùng riêng từng loại sẽ có điểm mù; dùng kết hợp giúp tăng độ phủ và
+                ưu
+                tiên remediation chính xác hơn.</div>
 
             <!-- 5. FREE vs LICENSE -->
             <h2>5. FREE vs LICENSE – KHÁC BIỆT CỐT LÕI</h2>
@@ -718,6 +992,9 @@
                 năng
                 phát hiện lỗ hổng tăng đến <strong>99%</strong>. Đây là nền tảng phù hợp để chuyển từ mô hình "quét định
                 kỳ" sang mô hình "kiểm soát rủi ro liên tục" trong toàn bộ vòng đời phát triển phần mềm.</p>
+            <p>Đối với case NodeGoat, kết quả cũng nhất quán với định hướng trên: SAST ghi nhận 96 findings, DAST xác
+                minh 6 findings, tổng 102 findings (chưa dedup). Điều này củng cố chiến lược kết hợp SAST + DAST để vừa
+                đảm bảo độ phủ, vừa xác thực khả năng khai thác trong thực tế.</p>
 
             <div class="footer-note">--- Hết báo cáo ---</div>
         </div>
