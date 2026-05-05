@@ -468,8 +468,6 @@
 
             <!-- 4. KẾT QUẢ THỬ NGHIỆM CÔNG CỤ -->
             <h2>4. KẾT QUẢ THỬ NGHIỆM CÔNG CỤ (SAST & DAST)</h2>
-            <p><em>Mục tiêu: giúp người đọc mới hiểu nhanh SAST làm gì, DAST làm gì, và vì sao cần kết hợp cả hai.</em>
-            </p>
             <h3>4.1 Phạm vi thử nghiệm</h3>
             <table>
                 <tr>
@@ -517,6 +515,14 @@
                 toàn diện.</div>
 
             <h3>4.2 Accuracy kỹ thuật theo Category (so sánh tool)</h3>
+            <div class="callout-info">
+                <strong>Ứng dụng test dùng cho Accuracy:</strong><br>
+                • <strong>OWASP Juice Shop</strong> (SAST + DAST): đo khả năng phát hiện lỗ hổng ở tầng source code và
+                runtime.<br>
+                • <strong>VulnAPI</strong> (DAST): đo khả năng xác minh lỗ hổng runtime/API behavior.<br>
+                • <strong>NodeGoat</strong> (SAST + DAST): dùng làm bộ đối chiếu hợp nhất cho tỷ trọng findings và
+                coverage.
+            </div>
             <div class="table-wrap">
                 <table class="accuracy-table">
                     <tr>
@@ -528,7 +534,8 @@
                         <th>Trivy</th>
                         <th>Burp/DAST</th>
                         <th>PentAGI</th>
-                        <th>Total</th>
+                        <th style="background: #ffefd5; color: #1e293b;">Total</th>
+
                     </tr>
                     <tr>
                         <td>Access Control - IDOR/BOLA</td>
@@ -718,7 +725,8 @@
                         <td>90/100 90%</td>
                     </tr>
                     <tr class="total-row">
-                        <td><strong>Total</strong></td>
+                        <td style="background: #f7cac9; color: #1e293b;"><strong>Total</strong></td>
+
                         <td><strong>1018/1700 60%</strong></td>
                         <td><strong>315/1700 19%</strong></td>
                         <td><strong>860/1700 51%</strong></td>
@@ -730,10 +738,10 @@
                     </tr>
                 </table>
             </div>
-            <div class="callout-warning"><strong>Kết luận dễ nhớ:</strong> SAST giỏi "thấy sớm trong code", DAST giỏi
+            <div class="callout-warning"><strong>Kết luận dễ nhớ:</strong> SAST "thấy sớm trong code", DAST
                 "xác nhận lỗi khi ứng dụng chạy". Dùng riêng từng loại sẽ có điểm mù; dùng kết hợp giúp tăng độ phủ và
                 ưu
-                tiên remediation chính xác hơn.</div>
+                tiên chính xác hơn.</div>
 
             <!-- 5. FREE vs LICENSE -->
             <h2>5. FREE vs LICENSE – KHÁC BIỆT CỐT LÕI</h2>
