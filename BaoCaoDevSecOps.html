@@ -264,6 +264,58 @@
             background: #eef6ff;
         }
 
+        .accuracy-legend {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 8px 0 12px;
+            font-size: 0.82em;
+            color: #334155;
+        }
+
+        .legend-pill {
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            font-weight: 600;
+        }
+
+        .legend-high {
+            background: #e8f8f0;
+            color: #166534;
+            border-color: #86efac;
+        }
+
+        .legend-medium {
+            background: #fff7e6;
+            color: #92400e;
+            border-color: #fcd34d;
+        }
+
+        .legend-low {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #fca5a5;
+        }
+
+        .score-high {
+            background: #e8f8f0 !important;
+            color: #166534;
+            font-weight: 700;
+        }
+
+        .score-medium {
+            background: #fff7e6 !important;
+            color: #92400e;
+            font-weight: 700;
+        }
+
+        .score-low {
+            background: #fef2f2 !important;
+            color: #991b1b;
+            font-weight: 700;
+        }
+
         @media (max-width: 700px) {
             .grid-2 {
                 grid-template-columns: 1fr;
@@ -523,6 +575,12 @@
                 • <strong>NodeGoat</strong> (SAST + DAST): dùng làm bộ đối chiếu hợp nhất cho tỷ trọng findings và
                 coverage.
             </div>
+
+            <div class="accuracy-legend">
+                <span class="legend-pill legend-high">Cao: >= 80%</span>
+                <span class="legend-pill legend-medium">Trung bình: 60-79%</span>
+                <span class="legend-pill legend-low">Thấp: &lt; 60%</span>
+            </div>
             <div class="table-wrap">
                 <table class="accuracy-table">
                     <tr>
@@ -737,6 +795,17 @@
                         <td><strong>1552/1700 91%</strong></td>
                     </tr>
                 </table>
+            </div>
+            <div class="callout-success">
+                <strong>Ví dụ cách hiểu bảng Accuracy:</strong><br>
+                Với dòng <strong>Injection - SQL/NoSQL Injection</strong>:<br>
+                • <strong>Snyk Code = 90/100 (90%)</strong> nghĩa là công cụ này rất mạnh trong phát hiện lỗi ở tầng
+                source code.<br>
+                • <strong>Burp/DAST = 75/100 (75%)</strong> nghĩa là vẫn phát hiện tốt ở runtime nhưng không mạnh bằng
+                SAST cho nhóm lỗi này.<br>
+                • <strong>Total = 97/100 (97%)</strong> nghĩa là khi kết hợp toàn bộ tool, category Injection được bao
+                phủ
+                gần như đầy đủ.
             </div>
             <div class="callout-warning"><strong>Kết luận dễ nhớ:</strong> SAST "thấy sớm trong code", DAST
                 "xác nhận lỗi khi ứng dụng chạy". Dùng riêng từng loại sẽ có điểm mù; dùng kết hợp giúp tăng độ phủ và
@@ -1000,6 +1069,29 @@
             <div class="footer-note">--- Hết báo cáo ---</div>
         </div>
     </div>
+    <script>
+        (function () {
+            const rows = document.querySelectorAll('.accuracy-table tr');
+            rows.forEach((row, rowIdx) => {
+                const cells = row.querySelectorAll('td');
+                cells.forEach((cell, colIdx) => {
+                    if (colIdx === 0) return;
+                    const text = cell.textContent || '';
+                    const match = text.match(/(\d+)%/);
+                    if (!match) return;
+                    const score = Number(match[1]);
+                    if (Number.isNaN(score)) return;
+                    if (score >= 80) {
+                        cell.classList.add('score-high');
+                    } else if (score >= 60) {
+                        cell.classList.add('score-medium');
+                    } else {
+                        cell.classList.add('score-low');
+                    }
+                });
+            });
+        })();
+    </script>
 </body>
 
 </html>
