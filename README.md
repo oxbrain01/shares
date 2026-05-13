@@ -1,0 +1,6 @@
+Tool1 = (tên cũ Snyk)
+Tool2 = (tên cũ SonarQube)
+Tool3 = (tên cũ Semgrep)
+Tool4 = (tên cũ Trivy)
+Tool5 = (tên cũ PentAGI)
+Tool6 = (tên cũ Burp Suite)
