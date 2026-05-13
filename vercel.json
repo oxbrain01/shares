@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/baocaodevsecops",
+      "destination": "/BaoCaoDevSecOps.html"
+    },
+    {
+      "source": "/baocaodevsecops/",
+      "destination": "/BaoCaoDevSecOps.html"
+    }
+  ]
+}
