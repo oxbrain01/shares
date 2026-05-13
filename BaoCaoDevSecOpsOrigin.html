@@ -411,42 +411,42 @@
                     <th>Loại lỗi phát hiện</th>
                 </tr>
                 <tr>
-                    <td><strong>Tool1 Code (SAST)</strong></td>
+                    <td><strong>Snyk Code (SAST)</strong></td>
                     <td>Source-to-Sink Tracing – truy vết dữ liệu từ đầu vào đến điểm nguy hiểm</td>
                     <td>SQL Injection, XSS, Hardcoded Secrets</td>
                 </tr>
                 <tr>
-                    <td><strong>Tool1 Open Source (SCA)</strong></td>
+                    <td><strong>Snyk Open Source (SCA)</strong></td>
                     <td>Đối chiếu dependencies với cơ sở dữ liệu CVE toàn cầu</td>
                     <td>Thư viện lỗi thời, CVE đã biết</td>
                 </tr>
                 <tr>
-                    <td><strong>Tool1 DAST</strong></td>
+                    <td><strong>Snyk DAST</strong></td>
                     <td>Quét động – gửi payload tấn công đến ứng dụng đang chạy</td>
                     <td>XSS, IDOR, Lộ credentials</td>
                 </tr>
                 <tr>
-                    <td><strong>Tool2</strong></td>
+                    <td><strong>SonarQube</strong></td>
                     <td>Taint Analysis – phân tích luồng dữ liệu liên thủ tục</td>
                     <td>SQL Injection, Command Injection</td>
                 </tr>
                 <tr>
-                    <td><strong>Tool3</strong></td>
+                    <td><strong>Semgrep</strong></td>
                     <td>Pattern Matching trên AST + Cross-file Analysis</td>
                     <td>Insecure crypto, Hardcoded secrets</td>
                 </tr>
                 <tr>
-                    <td><strong>Tool4</strong></td>
+                    <td><strong>Trivy</strong></td>
                     <td>Quét binary, container image và filesystem</td>
                     <td>Container CVE, IaC misconfig</td>
                 </tr>
                 <tr>
-                    <td><strong>Tool5 (AI)</strong></td>
+                    <td><strong>PentAGI (AI)</strong></td>
                     <td>AI tạo kịch bản tấn công đa bước, mô phỏng logic nghiệp vụ</td>
                     <td>Authorization bypass, Business logic flaws</td>
                 </tr>
                 <tr>
-                    <td><strong>Tool6 Pro</strong></td>
+                    <td><strong>Burp Suite Pro</strong></td>
                     <td>Proxy trung gian + Scanner tự động OWASP Top 10</td>
                     <td>SQLi, XSS, CSRF, SSRF</td>
                 </tr>
@@ -485,21 +485,21 @@
                     <td>18</td>
                     <td>79</td>
                     <td>87</td>
-                    <td>Tool1 SAST/DAST, Tool5</td>
+                    <td>Snyk SAST/DAST, PentAGI</td>
                 </tr>
                 <tr>
                     <td>Infra GSDT</td>
                     <td>10</td>
                     <td>25</td>
                     <td>16</td>
-                    <td>Tool5 (AI Pentest)</td>
+                    <td>PentAGI (AI Pentest)</td>
                 </tr>
                 <tr>
                     <td>Backend Services (G-Force)</td>
                     <td>1</td>
                     <td>25</td>
                     <td>27</td>
-                    <td>Tool1 SAST</td>
+                    <td>Snyk SAST</td>
                 </tr>
                 <tr class="total-row">
                     <td><strong>Tổng cộng</strong></td>
@@ -514,8 +514,8 @@
                 Được <strong>H05</strong> đánh
                 giá source code tốt, không còn chứa bất kì lỗ hổng, hardcode, lộ API key, biến môi trường... <br>
 
-                <strong>🛠️ Hệ sinh thái công cụ:</strong> Tool1 (SCA, SAST, IaC), Tool2 (chất lượng code), Tool3
-                (phân tích nhanh), Tool4 (container), Tool5 (AI pentest).
+                <strong>🛠️ Hệ sinh thái công cụ:</strong> Snyk (SCA, SAST, IaC), SonarQube (chất lượng code), Semgrep
+                (phân tích nhanh), Trivy (container), PentAGI (AI pentest).
             </div>
 
             <!-- 4. KẾT QUẢ THỬ NGHIỆM CÔNG CỤ -->
@@ -569,7 +569,7 @@
                     <td>Mã nguồn các khu benchmark (go, php, ruby, chains, adversarial, vulnerable_apps…; loại
                         Rust/Bash)</td>
 
-                    <td>TP Tool1 455 so với TP benchmark 2.633 (tổng 17,3% theo khu)</td>
+                    <td>TP Snyk 455 so với TP benchmark 2.633 (tổng 17,3% theo khu)</td>
                     <td>Theo từng khu — xem bảng đối chiếu TP bên dưới</td>
                     <td>0%</td>
                 </tr>
@@ -583,8 +583,8 @@
                 <tr>
                     <th>Khu vực</th>
                     <th style="text-align: right;">TP benchmark</th>
-                    <th style="text-align: right;">TP Tool1</th>
-                    <th style="text-align: right;">Tool1 / benchmark</th>
+                    <th style="text-align: right;">TP Snyk</th>
+                    <th style="text-align: right;">Snyk / benchmark</th>
                 </tr>
                 <tr>
                     <td>go</td>
@@ -643,7 +643,7 @@
             </table>
 
             <div class="callout-warning">
-                <strong>Kết Luận :</strong> Tool1 Free đạt 17.3% so với benchmark (số issues sẵn trong project)
+                <strong>Kết Luận :</strong> Snyk Free đạt 17.3% so với benchmark (số issues sẵn trong project)
 
             </div>
 
@@ -666,13 +666,13 @@
                 <table class="accuracy-table">
                     <tr>
                         <th>Category</th>
-                        <th>Tool1 Code</th>
-                        <th>Tool1 SCA</th>
-                        <th>Tool2</th>
-                        <th>Tool3</th>
-                        <th>Tool4</th>
-                        <th>Tool6/DAST</th>
-                        <th>Tool5</th>
+                        <th>Snyk Code</th>
+                        <th>Snyk SCA</th>
+                        <th>SonarQube</th>
+                        <th>Semgrep</th>
+                        <th>Trivy</th>
+                        <th>Burp/DAST</th>
+                        <th>PentAGI</th>
                         <th style="background: #ffefd5; color: #1e293b;">Total</th>
 
                     </tr>
@@ -880,9 +880,9 @@
             <div class="callout-success">
                 <strong>Ví dụ cách hiểu bảng Accuracy:</strong><br>
                 Với dòng <strong>Injection - SQL/NoSQL Injection</strong>:<br>
-                • <strong>Tool1 Code = 90%</strong> nghĩa là công cụ này rất mạnh trong phát hiện lỗi ở tầng
+                • <strong>Snyk Code = 90%</strong> nghĩa là công cụ này rất mạnh trong phát hiện lỗi ở tầng
                 source code.<br>
-                • <strong>Tool6/DAST = 75%</strong> nghĩa là vẫn phát hiện tốt ở runtime nhưng không mạnh bằng
+                • <strong>Burp/DAST = 75%</strong> nghĩa là vẫn phát hiện tốt ở runtime nhưng không mạnh bằng
                 SAST cho nhóm lỗi này.<br>
                 • <strong>Total = 90%</strong> nghĩa là lấy điểm cao nhất trong các tool cho category Injection,
                 thể hiện mức bao
@@ -904,27 +904,27 @@
                     <th>Bản License</th>
                 </tr>
                 <tr>
-                    <td><strong>Tool1</strong></td>
+                    <td><strong>Snyk</strong></td>
                     <td>200 lượt test/tháng, không auto-fix</td>
                     <td>Không giới hạn, tự động PR, reachability analysis</td>
                 </tr>
                 <tr>
-                    <td><strong>Tool2</strong></td>
+                    <td><strong>SonarQube</strong></td>
                     <td>Chỉ phân tích nhánh main</td>
                     <td>Phân tích PR, Taint Analysis nâng cao</td>
                 </tr>
                 <tr>
-                    <td><strong>Tool3</strong></td>
+                    <td><strong>Semgrep</strong></td>
                     <td>Phân tích đơn tệp, FP cao</td>
                     <td>Cross-file + AI Assistant (giảm 25% FP)</td>
                 </tr>
                 <tr>
-                    <td><strong>Tool6</strong></td>
+                    <td><strong>Burp Suite</strong></td>
                     <td>Chỉ kiểm thử thủ công</td>
                     <td>Scanner tự động, báo cáo chuyên nghiệp</td>
                 </tr>
                 <tr>
-                    <td><strong>Tool5</strong></td>
+                    <td><strong>PentAGI</strong></td>
                     <td>Model miễn phí (OpenAI, Gemini, Claude...)</td>
                     <td>API key LLM trả phí (GPT-4, Claude, Gemini)</td>
                 </tr>
@@ -984,28 +984,28 @@
                     <td>Sau tinh chỉnh lần 1</td>
                     <td>65%</td>
                     <td>~29 phút</td>
-                    <td>Custom rules Tool3 + Tool1</td>
+                    <td>Custom rules Semgrep + Snyk</td>
                 </tr>
                 <tr>
                     <td>Sau tinh chỉnh lần 2</td>
                     <td>99%</td>
                     <td>~8-10 phút (giảm ~80% so với baseline)</td>
-                    <td>Quality profile Tool2</td>
+                    <td>Quality profile SonarQube</td>
                 </tr>
                 <tr>
-                    <td><strong>Bổ sung lớp AI Tool5</strong></td>
+                    <td><strong>Bổ sung lớp AI PentAGI</strong></td>
                     <td>Tăng độ sâu kiểm thử theo kịch bản nghiệp vụ</td>
                     <td>Tăng effort xử lý cho ca phức tạp (15 phút đến >1 giờ)</td>
                     <td>Fine-tune prompt, mô phỏng tấn công đa bước</td>
                 </tr>
             </table>
             <div class="callout-success">
-                <strong>Kết luận vận hành:</strong> Sau tối ưu pipeline chuẩn (Tool1, Tool3, Tool2, Tool4), khả
+                <strong>Kết luận vận hành:</strong> Sau tối ưu pipeline chuẩn (Snyk, Semgrep, SonarQube, Trivy), khả
                 năng
                 phát hiện tăng đến <strong>99%</strong>, thời gian xử lý trung bình giảm khoảng <strong>80%</strong> và
                 tỷ
                 lệ false positive giảm khoảng <strong>98%</strong>.<br>
-                <strong>Tool5</strong> được định vị là lớp kiểm thử chuyên sâu đầy đủ, không thay thế
+                <strong>PentAGI</strong> được định vị là lớp kiểm thử chuyên sâu đầy đủ, không thay thế
                 pipeline
                 tốc độ cao.
             </div>
@@ -1018,7 +1018,7 @@
                     <h4>🟢 GĐ 1 (Tuần 1–2)</h4>
                     <ul>
                         <li>Khảo sát codebase</li>
-                        <li>Tích hợp CI/CD SAST: Tool1, Tool3, Tool4 ...</li>
+                        <li>Tích hợp CI/CD SAST: Snyk, Semgrep, Trivy ...</li>
                         <li>Quét baseline</li>
                     </ul>
                 </div>
@@ -1026,16 +1026,16 @@
                     <h4>🟡 GĐ 2 (Tuần 3–4)</h4>
                     <ul>
                         <li>Quality gate</li>
-                        <li>Tích hợp Tool2</li>
-                        <li>Tool4 scan container</li>
+                        <li>Tích hợp SonarQube</li>
+                        <li>Trivy scan container</li>
                         <li>DAST staging</li>
                     </ul>
                 </div>
                 <div class="phase">
                     <h4>🟠 GĐ 3 (Tuần 5–6)</h4>
                     <ul>
-                        <li>Custom Tool3 rules</li>
-                        <li>Tool5 AI pentest</li>
+                        <li>Custom Semgrep rules</li>
+                        <li>PentAGI AI pentest</li>
                         <li>Kiểm thử IaC</li>
                         <li>Đào tạo dev</li>
                     </ul>
@@ -1063,22 +1063,22 @@
                     <th>USD/tháng</th>
                 </tr>
                 <tr>
-                    <td>Tool1</td>
+                    <td>Snyk</td>
                     <td>SCA, SAST, Container, IaC</td>
                     <td>$125</td>
                 </tr>
                 <tr>
-                    <td>Tool2</td>
+                    <td>SonarQube</td>
                     <td>Chất lượng code & SAST</td>
                     <td>$720</td>
                 </tr>
                 <tr>
-                    <td>Tool5</td>
+                    <td>PentAGI</td>
                     <td>AI Pentest (API key LLM)</td>
                     <td>$100</td>
                 </tr>
                 <tr>
-                    <td>Tool6 Pro</td>
+                    <td>Burp Suite Pro</td>
                     <td>DAST chuyên sâu</td>
                     <td>$41.58</td>
                 </tr>
