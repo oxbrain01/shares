@@ -1050,6 +1050,51 @@
                     </ul>
                 </div>
             </div>
+            <h3>7.1 Monitor — CVE &amp; threat intelligence</h3>
+            <p>Hạng mục theo dõi lỗ hổng bên ngoài pipeline CI/CD: tổng hợp cảnh báo từ nhiều nguồn công khai, ưu tiên
+                CVE đang bị khai thác và có điểm EPSS cao, đẩy về kênh chat/email để team xử lý sớm.</p>
+            <table>
+                <tr>
+                    <th>Kênh</th>
+                    <th>Cơ chế</th>
+                    <th>Nguồn dữ liệu</th>
+                </tr>
+                <tr>
+                    <td><strong>Telegram</strong></td>
+                    <td>Cronjob tổng hợp định kỳ, gửi digest có lọc mức độ</td>
+                    <td>
+                        <strong>NVD</strong> (National Vulnerability Database),
+                        <strong>CISA KEV</strong> (Known Exploited Vulnerabilities),
+                        <strong>EPSS</strong> (Exploit Prediction Scoring System),
+                        <strong>GitHub Advisory</strong> và các feed tương đương
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Slack</strong></td>
+                    <td>Webhook / tích hợp feed</td>
+                    <td><strong>VulnCheck</strong> — threat intelligence, dữ liệu khai thác và ưu tiên CVE sớm hơn feed
+                        CVE thuần</td>
+                </tr>
+                <tr>
+                    <td><strong>Gmail</strong></td>
+                    <td>Đăng ký newsletter / alert email</td>
+                    <td>
+                        <strong>CVEfeed</strong> — digest CVE và advisory gọn, đọc nhanh qua email;
+                        <strong>OpenCVE</strong> — theo dõi CVE theo vendor/sản phẩm đã khai báo, gửi thông báo khi có
+                        bản ghi mới
+                    </td>
+                </tr>
+            </table>
+            <div class="callout-info">
+                📡 <strong>Giới thiệu nhanh:</strong>
+                <strong>VulnCheck</strong> — nền tảng threat intelligence tập trung exploitability, dữ liệu khai thác
+                thực tế và ưu tiên hóa CVE (bổ sung cho NVD/KEV).
+                <strong>CVEfeed</strong> — dịch vụ tổng hợp thông báo CVE/advisory qua email hoặc RSS, phù hợp đọc
+                lướt hàng ngày.
+                <strong>OpenCVE</strong> — nền tảng mã nguồn mở theo dõi CVE theo danh sách vendor/product của tổ chức,
+                có dashboard và cảnh báo tự động.
+            </div>
+
             <div class="callout-info">🎯 Tổng chi phí dự kiến: <strong>~$1.087/tháng</strong> – tương đương mô hình đã
                 thành công trên 5 hệ thống nội bộ.</div>
 
