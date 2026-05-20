@@ -465,7 +465,7 @@
             <h2>3. KẾT QUẢ TRIỂN KHAI THỰC TẾ</h2>
             <p>Triển khai trên 5 nhóm hệ thống: <strong>Ứng dụng GSDT, Web MTQG, Web GSDT, Hạ tầng GSDT và Backend
                     Services (Simulator, Alert, Event, Vneid).</strong></p>
-            <p>Các ứng dụng đều sử dụng <strong>JavaScript/TypeScript (Node.js)</strong>, riêng hạ tầng dùng
+            <p>Các ứng dụng đều sử dụng <strong>JavaScript/TypeScript (Node.js), Golang</strong>, riêng hạ tầng dùng
                 <strong>Ansible, Terraform (HCL/YAML)</strong>.<br>Phạm vi đánh giá bao gồm <strong>source code, thư
                     viện
                     phụ thuộc, cấu hình hạ tầng (IaC), container và kiểm thử runtime/API</strong>.
@@ -919,14 +919,20 @@
                     <td>Cross-file + AI Assistant (giảm 25% FP)</td>
                 </tr>
                 <tr>
-                    <td><strong>Tool6</strong></td>
-                    <td>Chỉ kiểm thử thủ công</td>
-                    <td>Scanner tự động, báo cáo chuyên nghiệp</td>
+                    <td><strong>Tool4</strong></td>
+                    <td>Quét image/container và filesystem cục bộ, không dashboard tập trung</td>
+                    <td>Tích hợp registry/CI/CD, báo cáo tuân thủ nhóm quyền, chính sách &amp; phân loại CVE nâng
+                        cao</td>
                 </tr>
                 <tr>
                     <td><strong>Tool5</strong></td>
                     <td>Model miễn phí (OpenAI, Gemini, Claude...)</td>
                     <td>API key LLM trả phí (GPT-4, Claude, Gemini)</td>
+                </tr>
+                <tr>
+                    <td><strong>Tool6</strong></td>
+                    <td>Chỉ kiểm thử thủ công</td>
+                    <td>Scanner tự động, báo cáo chuyên nghiệp</td>
                 </tr>
             </table>
             <h3>5.2 Tác động thực tế khi chuyển Free → License</h3>
