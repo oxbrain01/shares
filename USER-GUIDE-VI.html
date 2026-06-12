@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Hướng dẫn triển khai Security Assurance Platform + AI Audit Pentest">
+  <meta name="author" content="Pentest Team">
+  <meta name="version" content="1.1">
+  <title>Hướng dẫn Khách hàng — Security Assurance Platform + AI Audit Pentest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+
+    :root {
+      --ink: #0c1222;
+      --ink-muted: #4a5568;
+      --ink-faint: #718096;
+      --paper: #f4f6f9;
+      --paper-2: #e8ecf2;
+      --surface: #ffffff;
+      --border: #d1d9e6;
+      --border-dark: #2d3748;
+      --sidebar-bg: #0a0f1a;
+      --sidebar-text: #94a3b8;
+      --sidebar-active: #f1f5f9;
+      --accent: #c41e3a;
+      --accent-dim: rgba(196, 30, 58, .12);
+      --accent-glow: rgba(196, 30, 58, .35);
+      --cyan: #0891b2;
+      --cyan-dim: rgba(8, 145, 178, .1);
+      --crit: #b91c1c;
+      --crit-bg: #fef2f2;
+      --high: #c2410c;
+      --high-bg: #fff7ed;
+      --med: #b45309;
+      --med-bg: #fffbeb;
+      --low: #0369a1;
+      --low-bg: #eff6ff;
+      --info: #047857;
+      --info-bg: #ecfdf5;
+      --ok: #059669;
+      --sidebar-w: 300px;
+      --radius: 4px;
+      --mono: 'IBM Plex Mono', ui-monospace, monospace;
+      --sans: 'IBM Plex Sans', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 15px; }
+    body {
+      font-family: var(--sans);
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Confidential banner */
+    .conf-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      background: linear-gradient(90deg, #7f1d1d, var(--accent), #7f1d1d);
+      color: #fff; text-align: center;
+      font-size: .68rem; font-weight: 700; letter-spacing: .2em;
+      text-transform: uppercase; padding: .35rem 1rem;
+    }
+
+    /* Progress */
+    .read-progress {
+      position: fixed; top: 1.65rem; left: 0; height: 2px; z-index: 299;
+      background: var(--accent); width: 0%; transition: width .1s;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed; top: 1.65rem; left: 0;
+      width: var(--sidebar-w); height: calc(100vh - 1.65rem);
+      background: var(--sidebar-bg);
+      border-right: 1px solid rgba(255,255,255,.06);
+      overflow-y: auto; z-index: 100;
+    }
+    .sidebar-brand {
+      padding: 1.5rem 1.25rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .sidebar-brand .stamp {
+      display: inline-block;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      font-size: .58rem; font-weight: 700;
+      letter-spacing: .15em; text-transform: uppercase;
+      padding: .2rem .5rem; margin-bottom: .75rem;
+      transform: rotate(-2deg);
+    }
+    .sidebar-brand h2 {
+      font-size: .8rem; font-weight: 700; color: #f8fafc;
+      line-height: 1.35; letter-spacing: .02em;
+    }
+    .sidebar-brand .meta {
+      font-size: .65rem; color: var(--sidebar-text);
+      margin-top: .4rem; font-family: var(--mono);
+    }
+    .sidebar nav { padding: .75rem 0 2rem; }
+    .sidebar nav .nav-group {
+      font-size: .58rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .12em; color: #475569;
+      padding: .9rem 1.25rem .25rem;
+    }
+    .sidebar nav a {
+      display: block; padding: .4rem 1.25rem;
+      font-size: .76rem; color: var(--sidebar-text);
+      text-decoration: none; border-left: 3px solid transparent;
+      transition: all .15s;
+    }
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+      color: var(--sidebar-active);
+      background: rgba(255,255,255,.04);
+      border-left-color: var(--accent);
+    }
+
+    .main {
+      margin-left: var(--sidebar-w);
+      margin-top: 1.65rem;
+      min-height: calc(100vh - 1.65rem);
+    }
+    .topbar {
+      position: sticky; top: 1.65rem; z-index: 50;
+      background: rgba(244,246,249,.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: .65rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem;
+    }
+    .topbar-doc-id {
+      font-family: var(--mono); font-size: .72rem;
+      color: var(--ink-faint);
+    }
+    .topbar-doc-id strong { color: var(--ink-muted); }
+    .topbar-actions { display: flex; gap: .5rem; flex-shrink: 0; }
+    .btn {
+      display: inline-flex; align-items: center; gap: .35rem;
+      padding: .45rem .9rem; border-radius: var(--radius);
+      font-size: .75rem; font-weight: 600; font-family: inherit;
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--ink); cursor: pointer; text-decoration: none;
+      transition: all .15s;
+    }
+    .btn:hover { background: var(--paper-2); border-color: #a0aec0; }
+    .btn-primary {
+      background: var(--accent); color: #fff; border-color: var(--accent);
+    }
+    .btn-primary:hover { background: #9f1239; border-color: #9f1239; }
+
+    .content { max-width: 920px; margin: 0 auto; padding: 2rem 2.5rem 3rem; }
+
+    /* Cover */
+    .cover {
+      background: linear-gradient(145deg, #0a0f1a 0%, #1a1f35 45%, #0f172a 100%);
+      border: 1px solid var(--border-dark);
+      border-radius: 2px;
+      padding: 2.5rem 2.75rem;
+      margin-bottom: 2rem;
+      position: relative; overflow: hidden;
+      color: #e2e8f0;
+    }
+    .cover::before {
+      content: ''; position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(196,30,58,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(196,30,58,.04) 1px, transparent 1px);
+      background-size: 24px 24px;
+      pointer-events: none;
+    }
+    .cover::after {
+      content: ''; position: absolute; top: -30%; right: -15%;
+      width: 50%; height: 120%;
+      background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .cover-inner { position: relative; z-index: 1; }
+    .cover-classification {
+      display: inline-flex; align-items: center; gap: .5rem;
+      border: 2px solid var(--accent); color: #fca5a5;
+      font-size: .65rem; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; padding: .3rem .75rem;
+      margin-bottom: 1.5rem;
+    }
+    .cover h1 {
+      font-size: 1.85rem; font-weight: 700; line-height: 1.2;
+      color: #fff; margin-bottom: .5rem; letter-spacing: -.02em;
+    }
+    .cover .doc-type {
+      font-size: .85rem; color: #94a3b8; font-weight: 500;
+      margin-bottom: 1.75rem; text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1.25rem;
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding-top: 1.5rem;
+    }
+    .cover-grid dt {
+      font-size: .62rem; text-transform: uppercase;
+      letter-spacing: .1em; color: #64748b; margin-bottom: .2rem;
+    }
+    .cover-grid dd {
+      font-size: .82rem; font-weight: 600; color: #f1f5f9;
+      font-family: var(--mono);
+    }
+
+    /* Doc control */
+    .doc-control {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 2rem; overflow: hidden;
+    }
+    .doc-control-header {
+      background: var(--ink); color: #fff;
+      padding: .6rem 1.25rem;
+      font-size: .68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .1em;
+    }
+    .doc-control table { font-size: .8rem; }
+    .doc-control td, .doc-control th {
+      padding: .55rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .doc-control th {
+      width: 28%; text-align: left; font-weight: 600;
+      color: var(--ink-muted); background: var(--paper);
+    }
+    .doc-control tr:last-child td, .doc-control tr:last-child th { border-bottom: none; }
+
+    /* Executive summary */
+    .exec-summary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+    }
+    .exec-summary h2 {
+      font-size: 1rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .exec-summary p { font-size: .88rem; color: var(--ink-muted); margin-bottom: .75rem; }
+    .exec-pillars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: .75rem; margin-top: 1.25rem;
+    }
+    .pillar {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.1rem;
+    }
+    .pillar .icon {
+      width: 28px; height: 28px; border-radius: 2px;
+      background: var(--accent-dim); color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 800; margin-bottom: .5rem;
+    }
+    .pillar h3 { font-size: .78rem; font-weight: 700; margin-bottom: .25rem; }
+    .pillar p { font-size: .72rem; color: var(--ink-faint); margin: 0; }
+
+    /* Severity legend */
+    .severity-legend {
+      display: flex; flex-wrap: wrap; gap: .5rem;
+      margin: 1.25rem 0 2rem;
+    }
+    .sev {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-size: .68rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .04em; padding: .3rem .65rem;
+      border-radius: 2px; border: 1px solid;
+    }
+    .sev-crit { background: var(--crit-bg); color: var(--crit); border-color: #fecaca; }
+    .sev-high { background: var(--high-bg); color: var(--high); border-color: #fed7aa; }
+    .sev-med { background: var(--med-bg); color: var(--med); border-color: #fde68a; }
+    .sev-low { background: var(--low-bg); color: var(--low); border-color: #bfdbfe; }
+    .sev-info { background: var(--info-bg); color: var(--info); border-color: #a7f3d0; }
+
+    /* KPI */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: .75rem; margin-bottom: 2rem;
+    }
+    .metric {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 1rem 1.1rem;
+    }
+    .metric.cyan { border-top-color: var(--cyan); }
+    .metric.ok { border-top-color: var(--ok); }
+    .metric.med { border-top-color: var(--med); }
+    .metric .lbl {
+      font-size: .62rem; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--ink-faint); margin-bottom: .3rem;
+    }
+    .metric .val {
+      font-size: 1.35rem; font-weight: 700;
+      font-family: var(--mono); line-height: 1.1;
+    }
+    .metric .sub { font-size: .68rem; color: var(--ink-faint); margin-top: .2rem; }
+
+    /* Sections */
+    section { margin-bottom: 2.75rem; scroll-margin-top: 5rem; }
+    .section-head {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: .65rem; margin-bottom: 1.5rem;
+    }
+    .section-head h2 {
+      font-size: 1.15rem; font-weight: 700;
+      display: flex; align-items: baseline; gap: .75rem;
+      letter-spacing: -.01em;
+    }
+    .section-head .ch {
+      font-family: var(--mono);
+      font-size: .75rem; font-weight: 600;
+      color: var(--accent); flex-shrink: 0;
+    }
+    .section-head p {
+      font-size: .84rem; color: var(--ink-muted);
+      margin-top: .35rem; padding-left: 2.5rem;
+    }
+    h3 {
+      font-size: .92rem; font-weight: 700;
+      margin: 1.5rem 0 .75rem;
+      color: var(--ink);
+      display: flex; align-items: center; gap: .5rem;
+    }
+    h3::before {
+      content: ''; width: 4px; height: 1em;
+      background: var(--accent); border-radius: 1px;
+    }
+    h4 { font-size: .85rem; font-weight: 700; margin: 1rem 0 .5rem; }
+    p { font-size: .86rem; margin-bottom: .7rem; color: var(--ink-muted); }
+    ul, ol { padding-left: 1.35rem; margin: .5rem 0 .85rem; }
+    li { font-size: .86rem; margin-bottom: .3rem; color: var(--ink-muted); }
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Cards & callouts */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.35rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .finding-box {
+      border-radius: var(--radius);
+      padding: 1.1rem 1.35rem;
+      margin: 1rem 0;
+      border: 1px solid;
+      font-size: .84rem;
+    }
+    .finding-box.info {
+      background: var(--cyan-dim); border-color: #a5f3fc;
+      border-left: 4px solid var(--cyan);
+    }
+    .finding-box.warn {
+      background: var(--med-bg); border-color: #fde68a;
+      border-left: 4px solid var(--med);
+    }
+    .finding-box.ok {
+      background: var(--info-bg); border-color: #a7f3d0;
+      border-left: 4px solid var(--ok);
+    }
+    .finding-box.crit {
+      background: var(--crit-bg); border-color: #fecaca;
+      border-left: 4px solid var(--crit);
+    }
+    .finding-box strong {
+      display: block; font-size: .8rem;
+      text-transform: uppercase; letter-spacing: .04em;
+      margin-bottom: .4rem; color: var(--ink);
+    }
+    .finding-box p, .finding-box li { font-size: .84rem; margin-bottom: .3rem; }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin: 1rem 0;
+      background: var(--surface);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+    thead th {
+      background: var(--ink); color: #e2e8f0;
+      text-align: left; padding: .6rem 1rem;
+      font-weight: 600; font-size: .68rem;
+      text-transform: uppercase; letter-spacing: .06em;
+      white-space: nowrap;
+    }
+    tbody td {
+      padding: .6rem 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top; color: var(--ink-muted);
+    }
+    tbody tr:nth-child(even) td { background: #fafbfc; }
+    tbody tr:hover td { background: var(--paper); }
+    tbody tr:last-child td { border-bottom: none; }
+    .row-highlight td { background: var(--accent-dim) !important; font-weight: 600; color: var(--ink); }
+    .row-crit td:first-child { box-shadow: inset 3px 0 0 var(--crit); }
+
+    .badge {
+      display: inline-block; padding: .1rem .45rem;
+      border-radius: 2px; font-size: .65rem;
+      font-weight: 700; text-transform: uppercase;
+      letter-spacing: .03em; white-space: nowrap;
+    }
+    .badge-a { background: var(--cyan-dim); color: var(--cyan); }
+    .badge-b { background: var(--accent-dim); color: var(--accent); }
+    .badge-std { background: var(--paper-2); color: var(--ink-muted); }
+    .badge-plus { background: var(--low-bg); color: var(--low); }
+    .badge-ent { background: #ede9fe; color: #6d28d9; }
+    .badge-fast { background: var(--med-bg); color: var(--med); }
+    .badge-bal { background: var(--low-bg); color: var(--low); }
+    .badge-tho { background: var(--crit-bg); color: var(--crit); }
+    .badge-plane { background: var(--paper-2); color: var(--ink-muted); border: 1px solid var(--border); }
+
+    code {
+      font-family: var(--mono); font-size: .76rem;
+      background: var(--paper); padding: .1rem .35rem;
+      border: 1px solid var(--border); border-radius: 2px;
+      color: var(--ink);
+    }
+    pre, .diagram {
+      background: #0a0f1a; color: #cbd5e1;
+      border: 1px solid var(--border-dark);
+      border-radius: var(--radius);
+      padding: 1.15rem 1.35rem;
+      font-family: var(--mono); font-size: .7rem;
+      line-height: 1.55; overflow-x: auto; margin: 1rem 0;
+    }
+    pre code { background: none; border: none; padding: 0; color: inherit; }
+
+    .mermaid-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem; margin: 1rem 0;
+      overflow-x: auto;
+    }
+
+    /* Layer grid */
+    .layer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: .6rem; margin: 1rem 0;
+    }
+    .layer-card {
+      display: flex; gap: .7rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .85rem 1rem;
+      transition: border-color .15s;
+    }
+    .layer-card:hover { border-color: var(--accent); }
+    .layer-id {
+      width: 34px; height: 34px; flex-shrink: 0;
+      background: var(--ink); color: #fff;
+      font-family: var(--mono); font-size: .65rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 2px;
+    }
+    .layer-card h4 { font-size: .74rem; margin: 0 0 .15rem; color: var(--ink); }
+    .layer-card p { font-size: .68rem; margin: 0; color: var(--ink-faint); }
+
+    /* Timeline */
+    .timeline { position: relative; padding-left: 1.75rem; margin: 1.25rem 0; }
+    .timeline::before {
+      content: ''; position: absolute; left: 5px; top: 4px; bottom: 4px;
+      width: 2px; background: var(--border);
+    }
+    .tl-item { position: relative; margin-bottom: 1.1rem; }
+    .tl-item::before {
+      content: ''; position: absolute; left: -1.75rem; top: .4rem;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--accent); border: 2px solid var(--surface);
+      box-shadow: 0 0 0 2px var(--accent-dim);
+    }
+    .tl-item h4 { font-size: .82rem; color: var(--ink); margin-bottom: .2rem; }
+    .tl-item p { font-size: .78rem; margin: 0; }
+
+    /* Flow */
+    .pipeline-flow {
+      display: flex; flex-wrap: wrap; align-items: center;
+      gap: .4rem; margin: 1rem 0;
+    }
+    .pf-step {
+      background: var(--ink); color: #e2e8f0;
+      font-family: var(--mono); font-size: .68rem; font-weight: 500;
+      padding: .35rem .65rem; border-radius: 2px;
+    }
+    .pf-arrow { color: var(--ink-faint); font-size: .75rem; }
+
+    /* Checklist */
+    .checklist { list-style: none; padding: 0; }
+    .checklist li {
+      display: flex; gap: .6rem; align-items: flex-start;
+      padding: .45rem 0; border-bottom: 1px solid var(--border);
+      font-size: .82rem;
+    }
+    .checklist li::before {
+      content: ''; width: 14px; height: 14px; flex-shrink: 0;
+      border: 2px solid var(--border); border-radius: 2px;
+      margin-top: .15rem;
+    }
+
+    /* Framework refs */
+    .frameworks {
+      display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0 2rem;
+    }
+    .frameworks a {
+      font-size: .72rem; font-weight: 600;
+      padding: .35rem .75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--ink-muted);
+    }
+    .frameworks a:hover {
+      border-color: var(--accent); color: var(--accent);
+      text-decoration: none;
+    }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .role-card h4 { margin-top: 0; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+
+    .status-ok { color: var(--ok); font-weight: 600; }
+
+    .report-footer {
+      margin-top: 3rem; padding: 2rem 0;
+      border-top: 2px solid var(--ink);
+      text-align: center;
+    }
+    .report-footer .disclaimer {
+      font-size: .72rem; color: var(--ink-faint);
+      max-width: 600px; margin: .75rem auto 0;
+      line-height: 1.6;
+    }
+    .report-footer strong { font-size: .8rem; color: var(--ink-muted); }
+
+    .menu-toggle { display: none; }
+
+    @media (max-width: 1100px) {
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 900px) {
+      .menu-toggle {
+        display: flex; align-items: center; justify-content: center;
+        position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 200;
+        width: 48px; height: 48px; border-radius: 2px;
+        background: var(--accent); color: #fff; border: none;
+        font-size: 1.1rem; cursor: pointer;
+        box-shadow: 0 4px 20px var(--accent-glow);
+      }
+      .sidebar { transform: translateX(-100%); transition: transform .25s; top: 1.65rem; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .content { padding: 1.25rem; }
+      .two-col { grid-template-columns: 1fr; }
+      .cover h1 { font-size: 1.4rem; }
+    }
+    @media print {
+      .conf-bar, .read-progress, .sidebar, .topbar, .menu-toggle { display: none !important; }
+      .main { margin: 0; margin-top: 0; }
+      .content { max-width: 100%; padding: 0; }
+      .cover { break-after: page; }
+      section { break-inside: avoid; }
+      body { background: #fff; font-size: 11pt; }
+      a { color: var(--ink); }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="conf-bar">Tài liệu mật — Chỉ phân phối cho khách hàng được ủy quyền</div>
+  <div class="read-progress" id="readProgress"></div>
+  <button class="menu-toggle" id="menuToggle" aria-label="Mở menu">☰</button>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="stamp">Confidential</div>
+      <h2>Security Assurance Platform<br>+ AI Audit Pentest</h2>
+      <div class="meta">DOC-ID: SAP-CG-VI-1.1<br>Platform v1.0.10</div>
+    </div>
+    <nav id="nav">
+      <div class="nav-group">Tổng quan</div>
+      <a href="#cover">Trang bìa</a>
+      <a href="#executive">Executive Summary</a>
+      <a href="#s1">§1 Hai sản phẩm</a>
+      <a href="#s2">§2 Kiến trúc</a>
+      <a href="#s3">§3 Phân vai RACI</a>
+      <div class="nav-group">Triển khai</div>
+      <a href="#s4">§4 Chuẩn bị</a>
+      <a href="#s5">§5 Onboarding</a>
+      <a href="#s6">§6 Vận hành</a>
+      <div class="nav-group">Kỹ thuật</div>
+      <a href="#s7">§7 L1–L9</a>
+      <a href="#s8">§8 AI Audit</a>
+      <a href="#s9">§9 Gói dịch vụ</a>
+      <a href="#s10">§10 Biến GitLab</a>
+      <a href="#s11">§11 Artifact</a>
+      <div class="nav-group">Hỗ trợ</div>
+      <a href="#s12">§12 Sự cố</a>
+      <a href="#s13">§13 Go-live</a>
+      <a href="#s14">§14 Phụ lục</a>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <span class="topbar-doc-id"><strong>SAP-CG-VI-1.1</strong> · Tháng 6/2026 · Customer Deployment Guide</span>
+      <div class="topbar-actions">
+        <button class="btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Đầu trang</button>
+        <button class="btn btn-primary" onclick="window.print()">In / PDF</button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- COVER -->
+      <section id="cover" class="cover">
+        <div class="cover-inner">
+          <div class="cover-classification">⬤ Confidential — Customer Distribution Only</div>
+          <p class="doc-type">Customer Deployment &amp; Operations Guide</p>
+          <h1>Hướng dẫn triển khai<br>Security Assurance Platform + AI Audit Pentest</h1>
+          <p style="font-size:.88rem;color:#94a3b8;max-width:640px;margin-bottom:0;">
+            Tài liệu vận hành dành cho đội ngũ khách hàng — mô tả phạm vi, trách nhiệm, quy trình onboarding và vận hành hai lớp bảo mật trong mô hình MSP managed.
+          </p>
+          <dl class="cover-grid">
+            <div><dt>Đối tượng</dt><dd>PO · DevOps · Developer · Security</dd></div>
+            <div><dt>Phiên bản tài liệu</dt><dd>v1.1 / Platform 1.0.10</dd></div>
+            <div><dt>SLA Onboarding</dt><dd>≤ 1 ngày làm việc</dd></div>
+            <div><dt>Ngày phát hành</dt><dd>Tháng 6/2026</dd></div>
+            <div><dt>Phân loại</dt><dd>CONFIDENTIAL</dd></div>
+            <div><dt>Chuẩn tham chiếu</dt><dd>OWASP SAMM · NIST SSDF</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <!-- DOC CONTROL -->
+      <div class="doc-control">
+        <div class="doc-control-header">Document Control — Kiểm soát tài liệu</div>
+        <table>
+          <tr><th>Document ID</th><td>SAP-CG-VI-1.1</td></tr>
+          <tr><th>Title</th><td>Hướng dẫn triển khai dành cho Khách hàng — Security Assurance Platform + AI Audit Pentest</td></tr>
+          <tr><th>Owner</th><td>Pentest Team — DevSecOps Practice</td></tr>
+          <tr><th>Audience</th><td>Customer Product Owner, DevOps, Developer, Security liaison</td></tr>
+          <tr><th>Classification</th><td><strong style="color:var(--crit)">CONFIDENTIAL</strong> — Không chia sẻ công khai hoặc chuyển tiếp ngoài phạm vi hợp đồng</td></tr>
+          <tr><th>Disclaimer</th><td>Tài liệu mô tả dịch vụ được quản lý bởi Pentest Team (MSP). Khách hàng sở hữu repository và chịu trách nhiệm remediation findings. Không cấu thành cam kết pháp lý ngoài hợp đồng dịch vụ.</td></tr>
+        </table>
+      </div>
+
+      <!-- EXECUTIVE SUMMARY -->
+      <section id="executive" class="exec-summary">
+        <h2>Executive Summary — Tóm tắt điều hành</h2>
+        <p>Pentest Team cung cấp <strong>hai lớp bảo mật bổ sung</strong> cho ứng dụng của khách hàng, vận hành hoàn toàn trên hạ tầng MSP — khách hàng <strong>không cần host</strong> runner, engine quét hay nền tảng AI.</p>
+        <p><strong>Lớp A — Security Assurance Pipeline (L1–L9):</strong> Shift-left tự động trên mỗi push/MR, phát hiện sớm secret, pattern, dependency và runtime risk; chỉ publish metadata (<code>file</code>, <code>line</code>, <code>severity</code>).</p>
+        <p><strong>Lớp B — AI Audit Pentest:</strong> Audit sâu theo lịch hợp đồng hoặc trước go-live — phân tích logic nghiệp vụ, chuỗi tấn công đa bước và xác minh khai thác có kiểm soát (RoE).</p>
+        <div class="exec-pillars">
+          <div class="pillar"><div class="icon">01</div><h3>Zero customer infra</h3><p>Khách chỉ cần GitLab + repo + quyền Maintainer</p></div>
+          <div class="pillar"><div class="icon">02</div><h3>No source exfiltration</h3><p>Mã không rời VPC khách qua artifact công khai</p></div>
+          <div class="pillar"><div class="icon">03</div><h3>White-label assurance</h3><p>Log chỉ hiển thị <code>[Assurance][Lx]</code></p></div>
+          <div class="pillar"><div class="icon">04</div><h3>Dual-layer coverage</h3><p>CI liên tục + AI audit định kỳ / pre-go-live</p></div>
+        </div>
+      </section>
+
+      <div class="severity-legend" aria-label="Severity scale reference">
+        <span class="sev sev-crit">● Critical</span>
+        <span class="sev sev-high">● High</span>
+        <span class="sev sev-med">● Medium</span>
+        <span class="sev sev-low">● Low</span>
+        <span class="sev sev-info">● Informational</span>
+        <span style="font-size:.72rem;color:var(--ink-faint);align-self:center;margin-left:.5rem;">Thang mức rủi ro tham chiếu (PTES / CVSS-aligned)</span>
+      </div>
+
+      <div class="metrics">
+        <div class="metric"><div class="lbl">Pipeline CI</div><div class="val">L1–L9</div><div class="sub">Mỗi push / MR</div></div>
+        <div class="metric cyan"><div class="lbl">AI Audit</div><div class="val">3</div><div class="sub">Profile FAST · BALANCED · THOROUGH</div></div>
+        <div class="metric ok"><div class="lbl">Infra khách host</div><div class="val">0</div><div class="sub">Runner · L1 · AI Audit</div></div>
+        <div class="metric med"><div class="lbl">Gói dịch vụ</div><div class="val">3</div><div class="sub">Standard · Plus · Enterprise</div></div>
+      </div>
+
+      <div class="frameworks">
+        <a href="https://about.gitlab.com/topics/devsecops/shift-left-security/" target="_blank" rel="noopener">GitLab Shift-left Security</a>
+        <a href="https://docs.gitlab.com/user/application_security/get-started-security/" target="_blank" rel="noopener">GitLab Application Security</a>
+        <a href="https://owaspsamm.org/" target="_blank" rel="noopener">OWASP SAMM</a>
+        <a href="https://csrc.nist.gov/publications/detail/sp/800-218/final" target="_blank" rel="noopener">NIST SSDF SP 800-218</a>
+      </div>
+
+      <!-- §1 -->
+      <section id="s1">
+        <div class="section-head">
+          <h2><span class="ch">§01</span> Hai sản phẩm trong một nền tảng</h2>
+          <p>Hai lớp bảo mật bổ sung — không thay thế lẫn nhau.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Lớp</th><th>Tên thương mại</th><th>Khi nào chạy</th><th>Mục đích</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span class="badge badge-a">A</span></td>
+                <td><strong>Security Assurance Pipeline</strong></td>
+                <td>Mỗi push / MR / release</td>
+                <td>Shift-left: quét L1–L9 trong CI, block policy sớm</td>
+              </tr>
+              <tr class="row-highlight">
+                <td><span class="badge badge-b">B</span></td>
+                <td><strong>AI Audit Pentest</strong></td>
+                <td>Hợp đồng · pre-go-live · sau sự cố</td>
+                <td>Audit sâu AI: mã, logic nghiệp vụ, xác minh khai thác có RoE</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="mermaid-wrap">
+          <pre class="mermaid">
+flowchart LR
+  subgraph customer [Phia khach hang]
+    Dev[Nha phat trien]
+    Repo[GitLab Repository]
+    Staging[Staging Pre-prod]
+  end
+  subgraph msp [Pentest Team Admin]
+    Runner[Runner Fleet AWS]
+    CI[L1-L9 Pipeline]
+    L1Srv[L1 Quality Server]
+    Portal[Cong giam sat]
+    AI[AI Audit Pentest]
+  end
+  Dev -->|push MR| Repo
+  Repo -->|dispatch| Runner
+  Runner --> CI
+  CI --> L1Srv
+  CI --> Portal
+  Repo -.->|checkout| AI
+  Staging -.->|URL RoE| AI
+  AI --> Portal
+          </pre>
+        </div>
+        <div class="finding-box ok">
+          <strong>Cam kết với khách hàng</strong>
+          <ul>
+            <li>Khách <strong>không</strong> cài runner, image quét, máy chủ <strong>L1</strong> hay nền tảng AI Audit.</li>
+            <li>Artifact công khai chỉ metadata: <code>file</code>, <code>line</code>, <code>severity</code> — không snippet mã nguồn.</li>
+            <li>Log pipeline: <code>[Assurance][L1]</code> … <code>[Assurance][L9]</code> — không lộ tên công cụ quét.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- §2 -->
+      <section id="s2">
+        <div class="section-head">
+          <h2><span class="ch">§02</span> Kiến trúc hạ tầng</h2>
+          <p>DevSecOps Module + AI Audit Pentest — MSP managed trên AWS.</p>
+        </div>
+        <h3>2.1 Sơ đồ tổng thể</h3>
+        <pre class="diagram">┌──────────────────────────────────────────────────────────────────────────┐
+│  PHÍA KHÁCH HÀNG                                                          │
+│  • GitLab Project + Repository (sở hữu 100%)                              │
+│  • .gitlab-ci.yml + assurance.variables.yml                               │
+│  • Staging URL (Enterprise) · Deploy scripts · Runner token             │
+└───────────────────────────────┬──────────────────────────────────────────┘
+                                │ HTTPS — GitLab job dispatch
+                                ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│  TẦNG THỰC THI — AWS Pentest Team (Execution Plane)                      │
+│  Runner Manager (1/project) → Worker peak 10 job Docker đồng thời        │
+│  Image: assurance/security-runner:1.0.10 · ECR · NAT egress kiểm soát   │
+└───────────────┬─────────────────────────────┬────────────────────────────┘
+                │ L1 HTTPS (VPC nội bộ)          │ Webhook metadata (HMAC)
+                ▼                                ▼
+┌──────────────────────────┐    ┌────────────────────────────────────────┐
+│ TẦNG CHẤT LƯỢNG (L1)     │    │ TẦNG ĐIỀU KHIỂN (Control Plane)         │
+│ L1 Quality Server · DPA  │    │ Cổng giám sát · 1 tenant / khách        │
+└──────────────────────────┘    └────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│  AI AUDIT PENTEST — Nền tảng độc lập (Pentest Team host)                 │
+│  Multi-agent AI · sandbox Docker · Input: repo / staging URL             │
+│  Profile FAST / BALANCED / THOROUGH · Output: báo cáo + scorecard        │
+└──────────────────────────────────────────────────────────────────────────┘</pre>
+
+        <h3>2.2 Bốn plane vận hành</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Plane</th><th>Thành phần</th><th>Vận hành</th><th>Khách thấy</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge badge-plane">Integration</span></td><td><code>.gitlab-ci.yml</code>, <code>assurance.variables.yml</code></td><td>Khách + Pentest Team</td><td>Job <code>layer-*</code></td></tr>
+              <tr><td><span class="badge badge-plane">Execution</span></td><td>Runner fleet, security-runner image</td><td>Pentest Team</td><td>Không truy cập server</td></tr>
+              <tr><td><span class="badge badge-plane">Assurance deep</span></td><td>AI Audit Pentest flows</td><td>Pentest Team</td><td>Báo cáo + dashboard</td></tr>
+              <tr><td><span class="badge badge-plane">Control</span></td><td>Portal, L1 Quality Server, webhook</td><td>Pentest Team</td><td>Dashboard read-only</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>2.3 Ranh giới dữ liệu &amp; tin cậy</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Luồng</th><th>Dữ liệu</th><th>Lưu trữ</th><th>Commit Git?</th></tr></thead>
+            <tbody>
+              <tr><td>GitLab → Runner</td><td>Mã nguồn (checkout ephemeral)</td><td>Workspace job — xóa sau job</td><td>—</td></tr>
+              <tr><td>Runner → L1</td><td>Mã phân tích chất lượng</td><td>DB L1 Pentest Team</td><td>—</td></tr>
+              <tr><td>Runner → Portal</td><td>Metadata findings</td><td>DB Portal Pentest Team</td><td>—</td></tr>
+              <tr><td>Pipeline → Khách</td><td><code>assurance/*.json</code></td><td>Artifact GitLab CI</td><td>Tải về</td></tr>
+              <tr><td>AI Audit → Khách</td><td>Báo cáo audit / scorecard</td><td>Portal hoặc PDF</td><td>Không qua repo</td></tr>
+              <tr class="row-highlight"><td>Nội bộ runner</td><td>Raw scan output</td><td><code>.platform/internal/</code></td><td><strong>Không</strong> — gitignore</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>2.4 Luồng pipeline CI (entry.full)</h3>
+        <div class="mermaid-wrap">
+          <pre class="mermaid">
+sequenceDiagram
+  participant Dev as Developer
+  participant GL as GitLab khach
+  participant R as Runner Pentest Team
+  participant L as L1-L9 layers
+  participant P as Cong giam sat
+  Dev->>GL: push / MR
+  GL->>R: dispatch pipeline
+  R->>L: preflight scan gate
+  L-->>GL: assurance json artifact
+  L->>P: webhook metadata
+          </pre>
+        </div>
+
+        <h3>2.5 Vị trí AI Audit trong vòng đời SDLC</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Giai đoạn</th><th>Pipeline CI</th><th>AI Audit</th></tr></thead>
+            <tbody>
+              <tr><td>Mỗi commit / MR</td><td><span class="status-ok">✓ L2, L3, L4 (+L1)</span></td><td>—</td></tr>
+              <tr><td>Trước release major</td><td><span class="status-ok">✓ Full + L6/L8</span></td><td><span class="status-ok">✓ BALANCED/THOROUGH</span></td></tr>
+              <tr><td>Sau sự cố</td><td><span class="status-ok">✓ Re-scan</span></td><td><span class="status-ok">✓ Targeted audit</span></td></tr>
+              <tr><td>Định kỳ quý</td><td><span class="status-ok">✓ Baseline CI</span></td><td><span class="status-ok">✓ Full + scorecard</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- §3 -->
+      <section id="s3">
+        <div class="section-head">
+          <h2><span class="ch">§03</span> Phân vai: Khách hàng vs Pentest Team</h2>
+          <p>Bảng RACI — trách nhiệm rõ ràng theo chuẩn engagement audit.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Hạng mục</th><th>Pentest Team (Admin)</th><th>Khách hàng</th></tr></thead>
+            <tbody>
+              <tr><td>Runner GitLab</td><td><strong>R/A</strong></td><td>C — cấp token</td></tr>
+              <tr><td>Image security-runner</td><td><strong>R/A</strong></td><td>I</td></tr>
+              <tr><td>Máy chủ L1 (<code>layer-quality-analysis</code>)</td><td><strong>R/A</strong></td><td>I</td></tr>
+              <tr><td>Cổng giám sát + tenant</td><td><strong>R/A</strong></td><td>C — webhook secret</td></tr>
+              <tr><td>AI Audit Pentest</td><td><strong>R/A</strong></td><td>C — scope + RoE</td></tr>
+              <tr class="row-highlight"><td>GitLab + repository</td><td>I</td><td><strong>R/A</strong></td></tr>
+              <tr><td>Merge module CI</td><td>C</td><td><strong>R/A</strong></td></tr>
+              <tr><td>CI/CD Variables</td><td>C — gửi giá trị</td><td><strong>R/A</strong> — paste masked</td></tr>
+              <tr><td>deploy-staging.sh</td><td>C — template</td><td><strong>R/A</strong> — implement</td></tr>
+              <tr><td>Staging URL</td><td>I</td><td><strong>R/A</strong></td></tr>
+              <tr><td>Remediation findings</td><td>I</td><td><strong>R/A</strong></td></tr>
+              <tr><td>DPA (L1 — lưu mã phân tích chất lượng)</td><td><strong>R</strong> — cung cấp</td><td><strong>A</strong> — ký (Plus+)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:.78rem;">R = Responsible · A = Accountable · C = Consulted · I = Informed</p>
+        <div class="finding-box crit">
+          <strong>Phạm vi loại trừ — Khách không bao giờ phải làm</strong>
+          <ul>
+            <li>Cài GitLab Runner · Build image quét · Cài máy chủ L1 / engine L8 / nền tảng AI Audit</li>
+            <li>Mở egress ra SaaS scanner công cộng</li>
+            <li>Commit token/password vào <code>assurance.variables.yml</code></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- §4 through §14 appended below -->
+
+      <!-- §4 -->
+      <section id="s4">
+        <div class="section-head">
+          <h2><span class="ch">§04</span> Khách hàng cần chuẩn bị những gì?</h2>
+          <p>Checklist hạ tầng tối thiểu và file theo stack.</p>
+        </div>
+        <h3>4.1 Checklist hạ tầng tối thiểu</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Hạng mục</th><th>Yêu cầu</th><th>Ghi chú</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><strong>GitLab</strong></td><td>15.11+ · Project active</td><td>Cloud hoặc self-hosted</td></tr>
+              <tr><td>2</td><td><strong>Quyền</strong></td><td>Maintainer</td><td>Set CI/CD Variables</td></tr>
+              <tr><td>3</td><td><strong>Repository</strong></td><td>Mã + lịch sử Git</td><td>Branch protected khuyến nghị</td></tr>
+              <tr><td>4</td><td><strong>Runner token</strong></td><td>Registration token</td><td>Settings → CI/CD → Runners</td></tr>
+              <tr><td>5</td><td><strong>Whitelist IP</strong></td><td>NAT egress Pentest Team</td><td>Chỉ self-hosted GitLab</td></tr>
+              <tr><td>6</td><td><strong>Contact</strong></td><td>1 DevOps + 1 Security</td><td>Onboarding ≤ 1 ngày</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>4.2 File theo stack</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Stack</th><th>File</th><th>Lớp</th></tr></thead>
+            <tbody>
+              <tr><td>Mọi stack</td><td><code>.gitlab-ci.yml</code>, <code>assurance.variables.yml</code>, module CI</td><td>Pipeline</td></tr>
+              <tr><td>Node</td><td><code>package.json</code>, <code>l1-project.properties</code>, <code>coverage/lcov.info</code></td><td>L1, L4</td></tr>
+              <tr><td>Python / Go / Java</td><td><code>requirements.txt</code> / <code>go.mod</code> / <code>pom.xml</code></td><td>L4</td></tr>
+              <tr><td>Enterprise</td><td><code>Dockerfile</code>, <code>deploy-staging.sh</code>, <code>l8-runtime-config.yaml</code></td><td>L6, L8</td></tr>
+              <tr><td>L3</td><td><code>.assurance-credential.toml</code></td><td>Allowlist secret</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h4>Ví dụ l1-project.properties (Node — Plus+)</h4>
+        <pre><code># Copy từ l1-project.properties.example (install --with-l1-example)
+# Khóa dự án: biến L1_PROJECT_KEY trong GitLab Variables
+# Tuỳ chỉnh sources, tests, coverage cho stack của bạn
+sources=src
+tests=test
+coverage.reportPaths=coverage/lcov.info
+exclusions=**/node_modules/**,**/dist/**,**/*.spec.ts</code></pre>
+        <h3>4.3 Cấu trúc repo (nested)</h3>
+        <pre>your-app-repo/
+├── .gitlab-ci.yml
+├── assurance.variables.yml
+├── devSecOps-module/
+├── src/
+├── scripts/deploy-staging.sh
+├── l1-project.properties
+├── .assurance-credential.toml
+└── l8-runtime-config.yaml</pre>
+        <h3>4.4 Chuẩn bị AI Audit Pentest</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Hạng mục</th><th>Khách cung cấp</th><th>Profile</th><th>Thời gian ~</th></tr></thead>
+            <tbody>
+              <tr><td>Scope + RoE</td><td>Repo, URL/IP, khung giờ</td><td><span class="badge badge-fast">FAST</span></td><td>1–2 giờ</td></tr>
+              <tr><td>Staging + auth</td><td>HTTPS URL, test account</td><td><span class="badge badge-bal">BALANCED</span></td><td>4–8 giờ</td></tr>
+              <tr><td>Go-live / compliance</td><td>Full scope + on-call</td><td><span class="badge badge-tho">THOROUGH</span></td><td>1–2 ngày</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="s5">
+        <div class="section-head">
+          <h2><span class="ch">§05</span> Quy trình onboarding</h2>
+          <p>SLA Pentest Team: ≤ 1 ngày làm việc sau khi khách hoàn thành bước 1–4.</p>
+        </div>
+        <h3>Bước 0 — Integration Kit</h3>
+        <pre>Integration Kit — Tenant: acme-corp
+────────────────────────────────────
+MSP_TENANT_ID:           acme-corp
+MSP_WEBHOOK_SECRET:      sk_live_*** (xem một lần)
+MSP_PORTAL_WEBHOOK_URL:  https://assurance.yourco.com/api/v1/webhooks/assurance
+RUNNER_TAG:              assurance-msp
+COMPONENT_REF:           gitlab.com/pentest-team/assurance-platform@1.0.10
+SECURITY_RUNNER_IMAGE:   &lt;ECR URI&gt;:1.0.10
+NAT_EGRESS_IP:           x.x.x.x
+L1_PROJECT_KEY:          acme-api  (Plus+)</pre>
+        <div class="timeline">
+          <div class="tl-item"><h4>Bước 1 — Cấp quyền GitLab</h4><p>Maintainer · Runner token → gửi Admin qua kênh bảo mật.</p></div>
+          <div class="tl-item"><h4>Bước 2 — Merge module CI</h4><p>Review MR hoặc <code>quick-deploy --mode=nested --entry=core</code>.</p></div>
+          <div class="tl-item"><h4>Bước 3 — Paste GitLab Variables</h4><p>Masked + Protected. Không commit secret vào YAML.</p></div>
+          <div class="tl-item"><h4>Bước 4 — Chuẩn bị file stack</h4><p>l1-project.properties, .assurance-credential.toml, Dockerfile.</p></div>
+          <div class="tl-item"><h4>Bước 5 — Push lần đầu</h4><p>Job <code>platform-preflight</code> phải pass.</p></div>
+          <div class="tl-item"><h4>Bước 6–8 — Verify &amp; Handoff</h4><p>Pentest Team: runner, L1, portal · Dashboard + lịch AI Audit.</p></div>
+        </div>
+        <h4>.gitlab-ci.yml tối thiểu</h4>
+        <pre><code>variables:
+  DEVSECOPS_MODULE_DIR: devSecOps-module
+  SECURITY_RUNNER_IMAGE: "&lt;ECR URI từ Integration Kit&gt;"
+include:
+  - local: devSecOps-module/pipelines/entry.core.yml
+  - local: assurance.variables.yml   # PHẢI đứng SAU entry</code></pre>
+        <div class="finding-box warn">
+          <strong>Lưu ý quan trọng</strong>
+          <p><code>assurance.variables.yml</code> phải include <strong>sau</strong> <code>entry.*.yml</code>.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Biến GitLab</th><th>Masked</th><th>Gói</th></tr></thead>
+            <tbody>
+              <tr><td><code>MSP_TENANT_ID</code>, <code>MSP_PORTAL_WEBHOOK_URL</code></td><td>No</td><td>Tất cả</td></tr>
+              <tr><td><code>MSP_WEBHOOK_SECRET</code>, <code>L1_TOKEN</code>, <code>DAST_BEARER_TOKEN</code></td><td><strong>Yes</strong></td><td>Theo gói</td></tr>
+              <tr><td><code>L1_HOST_URL</code>, <code>L1_PROJECT_KEY</code>, <code>DAST_WEBSITE_URL</code></td><td>No</td><td>Plus+ / Enterprise</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="s6">
+        <div class="section-head">
+          <h2><span class="ch">§06</span> Vận hành hàng ngày</h2>
+        </div>
+        <div class="two-col">
+          <div class="card role-card"><h4>Developer</h4><ul><li><code>git push</code> / MR → pipeline tự chạy</li><li>Đọc findings trong artifact</li><li>Sửa theo <code>file</code> + <code>line</code></li><li>Pre-commit hook (khuyến nghị)</li></ul></div>
+          <div class="card role-card"><h4>DevOps</h4><ul><li>GitLab Variables khi đổi secret</li><li><code>DAST_WEBSITE_URL</code> khi staging đổi</li><li>Review <code>assurance.variables.yml</code></li><li>Approve <code>deploy-production</code></li></ul></div>
+        </div>
+        <div class="card role-card"><h4>Security team</h4><ul><li>Triage findings → ticket + owner + SLA</li><li>Yêu cầu AI Audit (scope + RoE)</li><li>Sign-off release sau gate pass</li></ul></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Sự kiện</th><th>Pipeline</th><th>Thời gian ~</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge badge-bal">Merge Request</span></td><td>L1–L5 + gate — không L6/L8/deploy</td><td>&lt; 30 phút</td></tr>
+              <tr><td><span class="badge badge-ent">Default branch</span></td><td>Full: build + L6 + L8 + deploy</td><td>30–90 phút</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pipeline-flow">
+          <span class="pf-step">git push</span><span class="pf-arrow">→</span>
+          <span class="pf-step">platform-preflight</span><span class="pf-arrow">→</span>
+          <span class="pf-step">layer L2–L5</span><span class="pf-arrow">→</span>
+          <span class="pf-step">policy-eval-source</span><span class="pf-arrow">→</span>
+          <span class="pf-step">assurance-publish</span>
+        </div>
+      </section>
+
+      <section id="s7">
+        <div class="section-head">
+          <h2><span class="ch">§07</span> 9 lớp Pipeline CI (L1–L9)</h2>
+          <p>Khách chỉ thấy tên lớp — không cần biết engine bên trong.</p>
+        </div>
+        <div class="layer-grid">
+          <div class="layer-card"><div class="layer-id">L1</div><div><h4>layer-quality-analysis</h4><p>Plus+ · l1-project.properties</p></div></div>
+          <div class="layer-card"><div class="layer-id">L2</div><div><h4>layer-pattern-analysis</h4><p>Mỗi pipeline</p></div></div>
+          <div class="layer-card"><div class="layer-id">L3</div><div><h4>layer-credential-check</h4><p>Secret · allowlist</p></div></div>
+          <div class="layer-card"><div class="layer-id">L4</div><div><h4>layer-dependency-scan</h4><p>Lock files</p></div></div>
+          <div class="layer-card"><div class="layer-id">L5</div><div><h4>layer-dependency-plus</h4><p>Enterprise</p></div></div>
+          <div class="layer-card"><div class="layer-id">L6</div><div><h4>layer-artifact-scan</h4><p>Dockerfile</p></div></div>
+          <div class="layer-card"><div class="layer-id">L7</div><div><h4>layer-config-check</h4><p>IaC / config</p></div></div>
+          <div class="layer-card"><div class="layer-id">L8</div><div><h4>layer-runtime-check</h4><p>Runtime · staging URL</p></div></div>
+          <div class="layer-card"><div class="layer-id">L9</div><div><h4>layer-license-check</h4><p>License</p></div></div>
+        </div>
+        <div class="pipeline-flow">
+          <span class="pf-step">policy-eval-source</span><span class="pf-arrow">→</span>
+          <span class="pf-step">policy-eval-artifact</span><span class="pf-arrow">→</span>
+          <span class="pf-step">policy-eval-runtime</span>
+        </div>
+      </section>
+
+      <section id="s8">
+        <div class="section-head">
+          <h2><span class="ch">§08</span> AI Audit Pentest</h2>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tiêu chí</th><th>Pipeline CI</th><th>AI Audit</th></tr></thead>
+            <tbody>
+              <tr><td>Tần suất</td><td>Mỗi push/MR</td><td>Theo lịch / on-demand</td></tr>
+              <tr><td>Độ sâu</td><td>Rule + signature</td><td>AI reasoning + multi-agent</td></tr>
+              <tr><td>Dynamic</td><td>L8 baseline</td><td>Xác minh khai thác có RoE</td></tr>
+              <tr><td>Thời gian</td><td>5–30 phút</td><td>1 giờ – 2 ngày</td></tr>
+              <tr><td>Output</td><td><code>assurance/*.json</code></td><td>Báo cáo + scorecard</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="timeline">
+          <div class="tl-item"><h4>T-3 ngày</h4><p>Scope · RoE · staging URL · test account · on-call.</p></div>
+          <div class="tl-item"><h4>Trong audit</h4><p>Không breaking deploy · phản hồi ≤ 4h.</p></div>
+          <div class="tl-item"><h4>T+5 ngày</h4><p>Triage · remediate · re-audit Critical/High.</p></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Finding CI</th><th>AI Audit bổ sung</th></tr></thead>
+            <tbody>
+              <tr><td>L2 pattern</td><td>Logic exploit, chuỗi tấn công đa bước</td></tr>
+              <tr><td>L3 secret</td><td>CI/CD, history, config leak</td></tr>
+              <tr><td>L4/L5 CVE</td><td>Reachability thực tế</td></tr>
+              <tr><td>L8 runtime</td><td>Xác minh dynamic có RoE</td></tr>
+              <tr><td>Business logic</td><td>AI trace flow</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="s9">
+        <div class="section-head"><h2><span class="ch">§09</span> Ba gói dịch vụ</h2></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Gói</th><th>Entry</th><th>Lớp</th><th>L1</th><th>AI Audit</th><th>Khách chuẩn bị</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge badge-std">Standard</span></td><td>core</td><td>L2–L4</td><td>—</td><td>1×/năm FAST</td><td>Repo + CI</td></tr>
+              <tr><td><span class="badge badge-plus">Plus</span></td><td>core+L1</td><td>L1–L4</td><td>✓</td><td>2×/năm BALANCED</td><td>+ l1-project.properties</td></tr>
+              <tr class="row-highlight"><td><span class="badge badge-ent">Enterprise</span></td><td>full</td><td>L1–L9</td><td>✓</td><td>4×/năm + THOROUGH</td><td>+ staging, RoE</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="s10">
+        <div class="section-head"><h2><span class="ch">§10</span> Biến GitLab</h2></div>
+        <p><strong>Ưu tiên:</strong> GitLab Variables → <code>assurance.variables.yml</code> → defaults.</p>
+        <pre><code>variables:
+  ENFORCEMENT_MODE: soft
+  ASSURANCE_MR_FAST: "true"
+  FAIL_ON_SECRET_LEAK: "true"
+  FAIL_ON_CRITICAL: "true"
+  L5_ENABLED: "false"</code></pre>
+        <p>Production: unset <code>ENFORCEMENT_MODE</code>, <code>FAIL_ON_DAST: true</code> (Enterprise).</p>
+      </section>
+
+      <section id="s11">
+        <div class="section-head"><h2><span class="ch">§11</span> Artifact và báo cáo</h2></div>
+        <div class="two-col">
+          <div class="card"><h4 style="margin-top:0">Pipeline CI</h4><ul><li><code>assurance-summary.json</code></li><li><code>assurance-findings.json</code></li><li><code>files-with-findings.txt</code></li></ul></div>
+          <div class="card"><h4 style="margin-top:0">AI Audit</h4><ul><li>Executive summary</li><li>Technical findings</li><li>OWASP scorecard</li><li>Re-test report</li></ul></div>
+        </div>
+      </section>
+
+      <section id="s12">
+        <div class="section-head"><h2><span class="ch">§12</span> Xử lý sự cố</h2></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Mức</th><th>Triệu chứng</th><th>Nguyên nhân</th><th>Hành động</th></tr></thead>
+            <tbody>
+              <tr class="row-crit"><td><span class="sev sev-high" style="padding:.15rem .4rem;font-size:.6rem">HIGH</span></td><td>Pipeline pending</td><td>Runner chưa đăng ký</td><td>Gửi lại runner token</td></tr>
+              <tr><td><span class="sev sev-med" style="padding:.15rem .4rem;font-size:.6rem">MED</span></td><td>preflight fail</td><td>Image/biến sai</td><td>Kiểm tra <code>SECURITY_RUNNER_IMAGE</code></td></tr>
+              <tr><td><span class="sev sev-med" style="padding:.15rem .4rem;font-size:.6rem">MED</span></td><td>L3 fail variables</td><td>False positive</td><td><code>.assurance-credential.toml</code></td></tr>
+              <tr><td><span class="sev sev-low" style="padding:.15rem .4rem;font-size:.6rem">LOW</span></td><td>L1 skip</td><td>Thiếu token</td><td>Liên hệ Admin Plus+</td></tr>
+              <tr><td><span class="sev sev-med" style="padding:.15rem .4rem;font-size:.6rem">MED</span></td><td>L8 empty</td><td>Chưa staging</td><td><code>DAST_WEBSITE_URL</code></td></tr>
+              <tr class="row-crit"><td><span class="sev sev-high" style="padding:.15rem .4rem;font-size:.6rem">HIGH</span></td><td>AI no dynamic</td><td>RoE chưa ký</td><td>Hoàn tất RoE</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Escalation:</strong> <code>CI_PIPELINE_ID</code>, <code>MSP_TENANT_ID</code>, timestamp.</p>
+      </section>
+
+      <section id="s13">
+        <div class="section-head"><h2><span class="ch">§13</span> Checklist go-live</h2></div>
+        <div class="two-col">
+          <div class="card"><h4 style="margin-top:0">Khách</h4><ul class="checklist"><li>CI merged, include order đúng</li><li>Variables đầy đủ masked</li><li>Pipeline pass default branch</li><li>Developer training</li><li>RoE + DPA ký</li></ul></div>
+          <div class="card"><h4 style="margin-top:0">Pentest Team</h4><ul class="checklist"><li>Runner online</li><li>Webhook 201 OK</li><li>L1 Quality Gate (Plus+)</li><li>Portal active</li><li>AI Audit booked</li></ul></div>
+        </div>
+      </section>
+
+      <section id="s14">
+        <div class="section-head"><h2><span class="ch">§14</span> Phụ lục</h2></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Chủ đề</th><th>File</th></tr></thead>
+            <tbody>
+              <tr><td>Cài module</td><td><code>docs/INSTALL.md</code></td></tr>
+              <tr><td>Biến CI/CD</td><td><code>docs/VARIABLES.md</code></td></tr>
+              <tr><td>Pipeline flow</td><td><code>docs/PIPELINE-FLOW.md</code></td></tr>
+              <tr><td>L8 runtime (staging)</td><td><code>docs/DAST-SETUP.md</code></td></tr>
+              <tr><td>Kiến trúc</td><td><code>docs/SECURITY-ASSURANCE-PLATFORM.md</code></td></tr>
+              <tr><td>Markdown gốc</td><td><code>docs/USER-GUIDE-VI.md</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <pre>Tuần 1–2: core + soft  →  Tuần 3–4: L1  →  Tuần 5–8: full L6/L8  →  strict + AI BALANCED</pre>
+      </section>
+
+      <footer class="report-footer">
+        <strong>Pentest Team — Security Assurance Platform 1.0.10 + AI Audit Pentest</strong>
+        <p class="disclaimer">Tài liệu khách hàng v1.1 · CONFIDENTIAL · Tháng 6/2026<br>Liên hệ Pentest Team DevSecOps để nhận Integration Kit và book AI Audit.</p>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: {
+      primaryColor: '#e8ecf2', primaryTextColor: '#0c1222',
+      primaryBorderColor: '#c41e3a', lineColor: '#4a5568',
+      secondaryColor: '#f4f6f9', tertiaryColor: '#fff'
+    }, securityLevel: 'loose' });
+
+    const nav = document.getElementById('nav');
+    const links = nav.querySelectorAll('a[href^="#"]');
+    const sections = [...links].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          links.forEach(l => l.classList.remove('active'));
+          const active = nav.querySelector('a[href="#' + e.target.id + '"]');
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    sections.forEach(s => observer.observe(s));
+
+    document.getElementById('menuToggle').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+    links.forEach(a => a.addEventListener('click', () => {
+      document.getElementById('sidebar').classList.remove('open');
+    }));
+
+    window.addEventListener('scroll', () => {
+      const h = document.documentElement;
+      const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+      document.getElementById('readProgress').style.width = pct + '%';
+    });
+  </script>
+</body>
+</html>
